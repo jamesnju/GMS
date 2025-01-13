@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
-  SidebarProvider,
+  // SidebarProvider,
   useSidebar,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"

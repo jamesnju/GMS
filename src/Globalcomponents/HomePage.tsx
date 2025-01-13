@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -161,7 +160,7 @@ export default function HomePage() {
                   <Card className="h-full bg-Background border border-primary">
                     <CardContent className="flex flex-col justify-between p-6">
                       <div>
-                        <p className="italic mb-4 text-Text">"{testimonial.comment}"</p>
+                        <p className="italic mb-4 text-Text">&quot;{testimonial.comment}&quot;</p>
                         <p className="font-semibold text-Text">{testimonial.name}</p>
                       </div>
                       <div className="flex justify-end mt-4">

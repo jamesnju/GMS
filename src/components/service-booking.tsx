@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Clock } from 'lucide-react'
+import { CalendarIcon, } from 'lucide-react'
 import { format } from "date-fns"
 
 export default function ServiceBooking() {
