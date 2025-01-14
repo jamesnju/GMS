@@ -72,9 +72,9 @@ export default function Home() {
               className="flex space-x-4"
               variants={staggerChildren}
             >
-              {['Home', 'Services', 'About', 'Contact'].map((item) => (
+              {['Home', 'Services', 'About', 'Contact', 'Login'].map((item) => (
                 <motion.li key={item} variants={slideUp}>
-                  <Link href={item === 'Home' ? '/' : `/${item.toLowerCase()}`} className="hover:text-Accent">
+                  <Link href={item === 'Login' ? '/auth' : `/${item.toLowerCase()}`} className="hover:text-Accent">
                     {item}
                   </Link>
                 </motion.li>

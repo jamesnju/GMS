@@ -21,15 +21,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 
 const menuItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, href: '/pro/dashboard' },
+  { name: 'Dashboard', icon: LayoutDashboard, href: '/' },
   { name: 'Service Booking', icon: Calendar, href: '/pro/servicesBooking' },
-  { name: 'My Appointments', icon: ClipboardList, href: '/appointments' },
-  { name: 'Payment', icon: CreditCard, href: '/payment' },
-  { name: 'Service Management', icon: Settings, href: '/service-management' },
-  { name: 'Customer Management', icon: Users, href: '/customer-management' },
-  { name: 'Payment Management', icon: CreditCard, href: '/payment-management' },
-  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/staff-management' },
-  { name: 'Inventory Management', icon: Package, href: '/inventory-management' },
+  { name: 'My Appointments', icon: ClipboardList, href: '/' },
+  { name: 'Payment', icon: CreditCard, href: '/' },
+  { name: 'Service Management', icon: Settings, href: '/' },
+  { name: 'Customer Management', icon: Users, href: '/' },
+  { name: 'Payment Management', icon: CreditCard, href: '/' },
+  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/' },
+  { name: 'Inventory Management', icon: Package, href: '/' },
 ]
 
 export function AppSidebar() {
