@@ -17,16 +17,14 @@ export function Navbar() {
   const { toggleSidebar } = useSidebar()
 
   return (
-    <nav className="bg-[#65a30d] px-4 py-2.5 flex items-center w-">
-      <div className="flex justify-between w-screen">
-
+    <nav className="bg-[#65a30d] px-4 py-2.5 flex justify-between w-full">
+      
       <div className="flex items-center">
         <Button variant="ghost" size="icon" className="text-white hover:bg-[#4d7c0f] mr-2" onClick={toggleSidebar}>
           <Menu className="h-5 w-5" />
         </Button>
       </div>
-      <div className="flex items-center ">
-        
+      <div className="flex flex-end justify-end ">
         <Button variant="ghost" size="icon" className="text-white hover:bg-[#4d7c0f]">
           <Bell className="h-5 w-5" />
         </Button>
@@ -61,7 +59,6 @@ export function Navbar() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
       </div>
     </nav>
   )
