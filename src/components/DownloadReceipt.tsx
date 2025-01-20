@@ -1,8 +1,18 @@
 import { Button } from "@/components/ui/button"
 import { Download } from 'lucide-react'
 
+interface InvoiceItem {
+  description: string;
+  amount: number;
+}
+
+interface InvoiceData {
+  total: number;
+  items: InvoiceItem[];
+}
+
 interface DownloadReceiptProps {
-  invoiceData: any; // Replace 'any' with a more specific type for your invoice data
+  invoiceData: InvoiceData;
 }
 
 export function DownloadReceipt({ invoiceData }: DownloadReceiptProps) {
@@ -13,9 +23,9 @@ export function DownloadReceipt({ invoiceData }: DownloadReceiptProps) {
       -------
       Date: ${new Date().toLocaleDateString()}
       Total: $${invoiceData.total.toFixed(2)}
-      
+
       Items:
-      ${invoiceData.items.map((item: any) => `${item.description}: $${item.amount.toFixed(2)}`).join('\n')}
+      ${invoiceData.items.map((item: InvoiceItem) => `${item.description}: $${item.amount.toFixed(2)}`).join('\n')}
     `;
 
     // Create a Blob with the receipt content
@@ -38,4 +48,3 @@ export function DownloadReceipt({ invoiceData }: DownloadReceiptProps) {
     </Button>
   );
 }
-

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
+  //FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -81,7 +81,7 @@ export function Profile() {
     },
   })
 
-  function onProfileSubmit(values: z.infer<typeof profileSchema>) {
+  function onProfileSubmit() {
     toast({
       title: "Profile updated",
       description: "Your profile information has been updated successfully.",
@@ -97,7 +97,7 @@ export function Profile() {
     })
   }
 
-  function onPasswordSubmit(values: z.infer<typeof passwordSchema>) {
+  function onPasswordSubmit() {
     toast({
       title: "Password changed",
       description: "Your password has been changed successfully.",

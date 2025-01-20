@@ -1,4 +1,4 @@
-
+import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { seteditData, toggleEdit } from "@/store/slice/editSlice";
 import { useDispatch } from "react-redux";
 import Link from "next/link";
@@ -23,6 +22,36 @@ export type Users = {
   email: string;
   name: string;
   createdAt: string;
+};
+
+// Define a component for the actions cell
+const ActionsCell = ({ row }: { row: { original: Users } }) => {
+  const dispatch = useDispatch();
+  const user = row.original;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => {
+            dispatch(seteditData({ ...user, id: Number(user.id) }));
+            dispatch(toggleEdit());
+          }}
+        >
+          <Link href={`/users/${user.id}`}>Edit</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>Delete</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 };
 
 export const columns: ColumnDef<Users>[] = [
@@ -68,35 +97,6 @@ export const columns: ColumnDef<Users>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => {
-      const dispatch = useDispatch(); // Use useDispatch here
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                dispatch(seteditData(row.original));
-                dispatch(toggleEdit());
-              }}
-            >
-              <Link href={`/users/${row.original.id}`}>
-              Edit
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <ActionsCell row={row} />,
   },
 ];

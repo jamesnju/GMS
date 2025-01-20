@@ -1,9 +1,9 @@
 import React from 'react'
 import { columns, Payment } from './column'
 import { DataTable } from '@/shacdn/data-table';
-import Link from 'next/link';
+// import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 
 
 

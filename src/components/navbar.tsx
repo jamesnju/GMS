@@ -12,20 +12,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSidebar } from '@/components/ui/sidebar'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+// import Link from 'next/link'
+// import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 
 export function Navbar() {
   const { toggleSidebar } = useSidebar()
-  const path = usePathname()
+  // const path = usePathname()
   const {data: session } = useSession();
   console.log(session);
   
 
-  const NavItem = ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <Link href={href} className={`block py-2 ${path.split("/")[1] == href.split("/")[1] && "bg-secondary300"} hover:bg-secondary300 transition-all duration-300 px-2`}>{children}</Link>
-)
+//   const NavItem = ({ href, children }: { href: string; children: React.ReactNode }) => (
+//     <Link href={href} className={`block py-2 ${path.split("/")[1] == href.split("/")[1] && "bg-secondary300"} hover:bg-secondary300 transition-all duration-300 px-2`}>{children}</Link>
+// )
 
   return (
     <nav className="bg-[#65a30d] px-4 py-2.5 flex justify-between w-full fixed z-50">

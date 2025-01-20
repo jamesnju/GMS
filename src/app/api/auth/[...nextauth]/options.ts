@@ -23,14 +23,14 @@ export const options: NextAuthOptions = {
           const res = await loginUser({
             email: credentials?.email as string,
             password: credentials?.password as string,
+            name: ""
           });
 
           console.log(res, "Response from loginUser");
 
           if (res?.user && res?.token) {
-            const { id, email, role, name}=res.user;
-
-            return { id, email, role,name};
+            const { id, email, role, name } = res.user;
+            return { id, email, role, name };
           }
 
           console.error("Login failed or invalid response:", res);
@@ -49,7 +49,7 @@ export const options: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id as number,
+        token.id = user.id as number;
         token.email = user.email;
         token.role = user.role;
         token.name = user.name;

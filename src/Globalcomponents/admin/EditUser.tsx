@@ -1,6 +1,11 @@
 import React from 'react'
 
-const EditUser = ({userData}:{userData:any}) => {
+interface User{
+  name: string;
+  email: string;
+}
+
+const EditUser = ({userData}:{userData:User}) => {
   return (
     <div className='text-Text'>
         {userData.name}

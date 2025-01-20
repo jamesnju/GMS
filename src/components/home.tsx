@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ChevronRight, Wrench, Car, Cog, Star, TypeIcon as type, LucideIcon } from 'lucide-react'
+import { ChevronRight, Wrench, Car, Cog, Star, LucideIcon } from 'lucide-react'
 
 interface Service {
   name: string;

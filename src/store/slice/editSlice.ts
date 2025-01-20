@@ -1,33 +1,35 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// interface Items {
-//   name: string;
-//   isOpen:boolean;
-//   active:string;
-// }
-//initialize the state
+// Define the shape of the editData if known, otherwise use a generic type
+interface EditData {
+  id: number;
+  name: string;
+  // Add other fields as necessary
+}
+
+// Initialize the state
 interface EditState {
-  editData: {} | null;
+  editData: EditData | null;
   isOpen: boolean;
-  active: "";
+  active: string;
 }
 
 const initialState: EditState = {
-  editData: {}, //initially its null
+  editData: null, //initially it's null
   isOpen: false,
   active: "",
 };
-//create slice
 
+// Create slice
 const editSlice = createSlice({
   name: "edit",
   initialState,
   reducers: {
-    //set items to be editted
-    seteditData(state, action) {
+    // Set items to be edited
+    seteditData(state, action: PayloadAction<EditData>) {
       state.editData = action.payload;
     },
-    //clear the edited when done
+    // Clear the edited data when done
     cleareditData(state) {
       state.editData = null;
     },
@@ -40,7 +42,7 @@ const editSlice = createSlice({
     toggleEdit: (state) => {
       state.isOpen = !state.isOpen;
     },
-    setActive: (state, action) => {
+    setActive: (state, action: PayloadAction<string>) =>{
       state.active = action.payload;
     },
   },

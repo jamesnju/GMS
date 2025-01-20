@@ -1,13 +1,13 @@
 // import '../styles/globals.css'
 "use client"
-import { Inter } from 'next/font/google'
+// import { Inter } from 'next/font/google'
 import { AppSidebar } from '@/components/sidebar'
 import { Navbar } from '@/components/navbar'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import '../../../styles/globals.css'
 import NextAuthSessionProvider from './NextAuthSessionProvider'
 
-const inter = Inter({ subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({
   children,
