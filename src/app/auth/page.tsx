@@ -1,6 +1,6 @@
 import React from "react";
-import Login from "@/Globalcomponents/auth/Login";
 import "../globals.css";
+import { Login } from "@/Globalcomponents/auth/Login";
 
 
 

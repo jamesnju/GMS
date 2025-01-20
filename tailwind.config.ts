@@ -13,7 +13,9 @@ export default {
   			Primary: '#B91C1C',
   			Secondary: '#1F2937',
   			Accent: '#FACC15',
-  			Background: '#FFFFFF',
+  			// Background: '#FFFFFF',
+			  Background: '#E2FBCE',
+
   			Text: '#111827',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

@@ -1,10 +1,11 @@
 import React from 'react'
-import PageView from './pagev'
+import { Profile } from "@/components/Profile"
+
 
 const page = () => {
   return (
     <div>
-      <PageView/>
+      <Profile />
     </div>
   )
 }

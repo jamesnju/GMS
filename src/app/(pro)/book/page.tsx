@@ -1,10 +1,11 @@
+import ServiceBooking from '@/components/service-booking'
 import React from 'react'
-import PageView from './pagev'
 
 const page = () => {
   return (
     <div>
-      <PageView/>
+        <ServiceBooking/> 
+
     </div>
   )
 }

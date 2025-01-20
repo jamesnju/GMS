@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, } from 'lucide-react'
 import { format } from "date-fns"
 
-export default function ServiceBooking() {
+export default function AddService() {
   const [date, setDate] = useState<Date>()
   const [serviceType, setServiceType] = useState<string>("")
   const [time, setTime] = useState<string>("")

@@ -72,11 +72,11 @@ export default function Home() {
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
               {services.map((service, index) => (
-                <Card key={index} className="h-full bg-Secondary border border-Primary ">
+                <Card key={index} className="h-full bg-Background border border-Secondary">
                   <CardContent className="flex flex-col items-center p-6">
                     <service.icon className="h-12 w-12 text-primary mb-4" />
-                    <h3 className="text-xl font-semibold mb-2 text-Accent">{service.name}</h3>
-                    <p className="text-center text-white">{service.description}</p>
+                    <h3 className="text-xl font-semibold mb-2 text-Text">{service.name}</h3>
+                    <p className="text-center text-Text">{service.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -84,18 +84,18 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-Background text-Text py-16">
+        <section className="bg-Secondary text-Background py-16">
           <div className="container mx-auto">
             <h2 className="text-3xl font-display font-bold mb-8 text-center">
               What Our Customers Say
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
               {testimonials.map((testimonial, index) => (
-                <Card key={index} className="h-full bg-Secondary border border-primary">
+                <Card key={index} className="h-full bg-Background border border-primary">
                   <CardContent className="flex flex-col justify-between p-6">
                     <div>
-                      <p className="italic mb-4 text-white">&quot;{testimonial.comment}&ldquo;</p>
-                      <p className="font-semibold text-red-500">{testimonial.name}</p>
+                      <p className="italic mb-4 text-Text">&quot;{testimonial.comment}&ldquo;</p>
+                      <p className="font-semibold text-Text">{testimonial.name}</p>
                     </div>
                     <div className="flex justify-end mt-4">
                       {[...Array(testimonial.rating)].map((_, i) => (
@@ -115,20 +115,20 @@ export default function Home() {
               Visit Us
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
-              <Card className="bg-Secondary border border-Primary">
+              <Card className="bg-Background border border-Secondary">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4 text-Accent">Contact Information</h3>
-                  <p className="mb-2 text-white"><strong>Address:</strong> Ambank House, Nairobi CBD</p>
-                  <p className="mb-2 text-white"><strong>Phone:</strong> (254) 123-4567</p>
-                  <p className="mb-2 text-Primary"><strong>Email:</strong> info@autoprogarage.com</p>
+                  <h3 className="text-xl font-semibold mb-4 text-Text">Contact Information</h3>
+                  <p className="mb-2 text-Text"><strong>Address:</strong> Ambank House, Nairobi CBD</p>
+                  <p className="mb-2 text-Text"><strong>Phone:</strong> (254) 123-4567</p>
+                  <p className="mb-2 text-Text"><strong>Email:</strong> info@autoprogarage.com</p>
                 </CardContent>
               </Card>
-              <Card className="bg-Secondary border border-Accent">
+              <Card className="bg-Background border border-Secondary">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4 text-Accent">Opening Hours</h3>
-                  <p className="mb-2 text-white"><strong>Monday - Friday:</strong> 8:00 AM - 6:00 PM</p>
-                  <p className="mb-2 text-white"><strong>Saturday:</strong> 9:00 AM - 3:00 PM</p>
-                  <p className="mb-2 text-Primary"><strong>Sunday:</strong> Closed</p>
+                  <h3 className="text-xl font-semibold mb-4 text-Text">Opening Hours</h3>
+                  <p className="mb-2 text-Text"><strong>Monday - Friday:</strong> 8:00 AM - 6:00 PM</p>
+                  <p className="mb-2 text-Text"><strong>Saturday:</strong> 9:00 AM - 3:00 PM</p>
+                  <p className="mb-2 text-Text"><strong>Sunday:</strong> Closed</p>
                 </CardContent>
               </Card>
             </div>
