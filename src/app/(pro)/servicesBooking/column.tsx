@@ -124,7 +124,7 @@ export const columns: ColumnDef<services>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => {
+    cell: () => {
  
       return (
         <DropdownMenu>
