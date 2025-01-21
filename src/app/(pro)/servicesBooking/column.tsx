@@ -125,7 +125,6 @@ export const columns: ColumnDef<services>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const payment = row.original
  
       return (
         <DropdownMenu>

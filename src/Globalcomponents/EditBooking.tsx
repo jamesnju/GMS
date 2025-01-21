@@ -57,7 +57,7 @@ const formSchema = z.object({
 const EditServiceBookingForm = ({ services, categories, bookingData }: ServiceBookingFormProps) => {
 
   const { data: session } = useSession()
-  const [initialData, setInitialData] = useState(bookingData || null)
+  const [initialData, ] = useState(bookingData || null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
