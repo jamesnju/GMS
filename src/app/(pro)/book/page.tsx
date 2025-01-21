@@ -1,11 +1,14 @@
-import ServiceBooking from '@/components/service-booking'
+import { getAllServices, getAllServicesCategory } from '@/actions/Services';
+import BookServices from '@/Globalcomponents/BookServices'
 import React from 'react'
 
-const page = () => {
+const page = async() => {
+  const services = await getAllServices() || [];
+  const serviceCategories = await getAllServicesCategory() || [];
+  console.log(services, "the service")
   return (
-    <div>
-        <ServiceBooking/> 
-
+    <div className='h-screen"'>
+      <BookServices services={services} categories={serviceCategories}/>
     </div>
   )
 }

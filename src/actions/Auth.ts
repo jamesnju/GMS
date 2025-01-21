@@ -31,7 +31,7 @@ export async function loginUser(data: Data) {
 }
 
 export  async function registerUser(Data: Data){
-  console.log(Data, "sending data.....");
+ // console.log(Data, "sending data.....");
   try {
     const res = await fetch(baseUrl + "register",{
       method: "POST",

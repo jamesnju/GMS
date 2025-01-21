@@ -58,7 +58,7 @@ export function AppSidebar() {
                 )}
               >
                 <Link href={item.href}>
-                  <item.icon className="mr-2 h-4 w-4 bg-black" />
+                  <item.icon className="mr-2 h-4 w-4 text-black" />
                   <span className='text-Text'>{item.name}</span>
                 </Link>
               </SidebarMenuButton>

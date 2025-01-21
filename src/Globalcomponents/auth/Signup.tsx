@@ -5,12 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerUser } from "@/actions/Auth";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,13 +27,17 @@ const Signup = () => {
       const res = await registerUser(Data);
       if (!res.data) {
         const result = await res;
-        alert("Success");
+        // alert("Success");
+        toast.success("Registration successful!");
+        router.push("/auth");
         return result.data;
       }
       throw new Error("Network error");
+      toast.error("Registration failed. Please try again.");
     } catch (error) {
       console.log(error, "Error occurred");
-      alert("Error");
+      // alert("Error");
+      // toast.error("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
