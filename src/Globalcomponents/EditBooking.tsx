@@ -1,44 +1,57 @@
 "use client"
-import React, { useEffect, useState } from "react"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Input } from "@/components/ui/input"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { useSession } from "next-auth/react"
+import React, { useEffect } from "react";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useSession } from "next-auth/react";
 
-// Define the Service type
-interface Service {
-  id: number
-  name: string
-  description: string
-}
-
-interface ServiceCategory {
-  id: number
-  name: string
-}
-
+// Define the ServiceBookingFormProps interface
 interface ServiceBookingFormProps {
-  services: Service[] // Services passed as a prop
-  categories: ServiceCategory[] // Categories passed as a prop
-  bookingData?: { // Optional booking data for editing
-    serviceId: string
-    description: string
-    categoryId: string
-    bookedDate: Date
-    price: string
-  }
+  id: number;
+  userId: number;
+  serviceId: number;
+  categoryId: number;
+  description: string;
+  bookedDate: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  service: {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    categoryId: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+  category: {
+    id: number;
+    name: string;
+    description: string;
+    createdAt: string;
+  };
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+    createdAt: string;
+  };
 }
 
+// Define the validation schema
 const formSchema = z.object({
   serviceId: z.string().nonempty("Please select a service."),
   description: z.string().nonempty("Please provide a description."),
@@ -52,62 +65,55 @@ const formSchema = z.object({
     .refine((val) => !isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0, {
       message: "Please provide a valid price.",
     }),
-})
+});
 
-const EditServiceBookingForm = ({ services, categories, bookingData }: ServiceBookingFormProps) => {
-
-  const { data: session } = useSession()
-  const [initialData, ] = useState(bookingData || null)
+const EditServiceBookingForm = ({ bookingData }: { bookingData: ServiceBookingFormProps }) => {
+  const { data: session } = useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      serviceId: initialData?.serviceId || "",
-      description: initialData?.description || "",
-      categoryId: initialData?.categoryId || "",
-      price: initialData?.price || "",
-      bookedDate: initialData?.bookedDate || undefined,
+      serviceId: bookingData.serviceId.toString(),
+      description: bookingData.description,
+      categoryId: bookingData.categoryId.toString(),
+      price: bookingData.service.price.toString(),
+      bookedDate: new Date(bookingData.bookedDate),
       userId: session?.user?.id,
     },
-  })
+  });
 
-  // Optional: If bookingData changes, update the form data
   useEffect(() => {
     if (bookingData) {
       form.reset({
-        serviceId: bookingData.serviceId,
+        serviceId: bookingData.serviceId.toString(),
         description: bookingData.description,
-        categoryId: bookingData.categoryId,
-        price: bookingData.price,
-        bookedDate: bookingData.bookedDate,
-      })
+        categoryId: bookingData.categoryId.toString(),
+        price: bookingData.service.price.toString(),
+        bookedDate: new Date(bookingData.bookedDate),
+      });
     }
-  }, [bookingData, form])
+  }, [bookingData, form]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log("Form submitted:", values)
+    console.log("Form submitted:", values);
 
     // Proceed with the service booking logic, e.g., API call
-    // Example: if you're updating a booking, you would make an API call to update it.
-    // If it's a new booking, the logic would be similar but to create a new one.
-    
-    // Example API call for updating
-    if (initialData) {
-      // Call API to update the service booking with the new values
-      console.log("Updating booking:", values)
+    if (bookingData) {
+      console.log("Updating booking:", values);
     } else {
-      // Call API to create a new service booking
-      console.log("Creating new booking:", values)
+      console.log("Creating new booking:", values);
     }
 
-    form.reset()
-  }
+    form.reset();
+  };
 
   return (
     <Card className="mx-auto bg-red-300 h-screen">
       <CardHeader>
-        <CardTitle>{initialData ? "Edit Service Booking" : "Service Booking"}</CardTitle>
-        <CardDescription>{initialData ? "Update your service appointment details." : "Book your service appointment here."}</CardDescription>
+        <CardTitle>{bookingData ? "Edit Service Booking" : "Service Booking"}</CardTitle>
+        <CardDescription>
+          {bookingData ? "Update your service appointment details." : "Book your service appointment here."}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -126,11 +132,9 @@ const EditServiceBookingForm = ({ services, categories, bookingData }: ServiceBo
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {services.map((service) => (
-                        <SelectItem key={service.id} value={service.id.toString()}>
-                          {service.name}
-                        </SelectItem>
-                      ))}
+                      <SelectItem key={bookingData.service.id} value={bookingData.service.id.toString()}>
+                        {bookingData.service.name}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -167,11 +171,9 @@ const EditServiceBookingForm = ({ services, categories, bookingData }: ServiceBo
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id.toString()}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
+                      <SelectItem key={bookingData.category.id} value={bookingData.category.id.toString()}>
+                        {bookingData.category.name}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -230,13 +232,13 @@ const EditServiceBookingForm = ({ services, categories, bookingData }: ServiceBo
 
             {/* Submit Button */}
             <Button type="submit" className="w-full">
-              {initialData ? "Update Service" : "Book Service"}
+              {bookingData ? "Update Service" : "Book Service"}
             </Button>
           </form>
         </Form>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default EditServiceBookingForm
+export default EditServiceBookingForm;

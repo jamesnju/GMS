@@ -1,7 +1,8 @@
-"use client"
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,44 +10,91 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-// import { Checkbox } from "@/components/ui/checkbox"
+} from "@/components/ui/dropdown-menu";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { seteditData, toggleEdit } from "@/store/slice/editSlice";
+import { useDispatch } from "react-redux";
+import Link from "next/link";
+import Modal from 'react-modal';
+import axios from 'axios';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type services = {
-  id: number
-  name: string
-  description: string
-  categoryId: string
-  createdAt: string
-  price: number
-}
+  id: number;
+  name: string;
+  description: string;
+  categoryId: string;
+  createdAt: string;
+  price: number;
+};
+
+const ActionsCell = ({ row }: { row: { original: services } }) => {
+  const dispatch = useDispatch();
+  const services = row.original;
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/services/${services.id}`);
+      // Handle successful deletion (e.g., refetch data, show success message)
+    } catch (error) {
+      console.error("Failed to delete service", error);
+      // Handle error (e.g., show error message)
+    } finally {
+      closeModal();
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => {
+              dispatch(seteditData({ ...services, id: Number(services.id) }));
+              dispatch(toggleEdit());
+            }}
+          >
+            <Link href={`/servicesBooking/${services.id}`}>Edit</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={openModal}>Delete</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Confirm Deletion"
+        ariaHideApp={false}
+        className="modal"
+        overlayClassName="modal-overlay"
+      >
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete this service?</p>
+        <div className="modal-actions">
+          <Button onClick={handleDelete}>Yes, Delete</Button>
+          <Button variant="ghost" onClick={closeModal}>
+            Cancel
+          </Button>
+        </div>
+      </Modal>
+    </>
+  );
+};
 
 export const columns: ColumnDef<services>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
   {
     accessorKey: "id",
     header: "id",
@@ -62,7 +110,7 @@ export const columns: ColumnDef<services>[] = [
           Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -76,7 +124,7 @@ export const columns: ColumnDef<services>[] = [
           Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -90,23 +138,21 @@ export const columns: ColumnDef<services>[] = [
           Description
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
-
   {
     accessorKey: "price",
     header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("price"))
+      const amount = parseFloat(row.getValue("price"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-      }).format(amount)
- 
-      return <div className="text-right font-medium">{formatted}</div>
+      }).format(amount);
+
+      return <div className="text-right font-medium">{formatted}</div>;
     },
-    
   },
   {
     accessorKey: "createdAt",
@@ -124,29 +170,6 @@ export const columns: ColumnDef<services>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: () => {
- 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            {/* <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem> */}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
+    cell: ({ row }) => <ActionsCell row={row} />,
   },
-]
+];

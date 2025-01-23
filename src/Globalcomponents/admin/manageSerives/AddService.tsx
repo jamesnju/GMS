@@ -1,130 +1,102 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, } from 'lucide-react'
-import { format } from "date-fns"
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+// Define the validation schema
+const formSchema = z.object({
+  name: z.string().nonempty("Name is required"),
+  description: z.string().nonempty("Description is required"),
+  price: z.string().refine((val) => !isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0, {
+    message: "Please provide a valid price",
+  }),
+  categoryId: z.string().nonempty("Please select a category"),
+});
 
 export default function AddService() {
-  const [date, setDate] = useState<Date>()
-  const [serviceType, setServiceType] = useState<string>("")
-  const [time, setTime] = useState<string>("")
-  const [vehicleDetails, setVehicleDetails] = useState({
-    make: "",
-    model: "",
-    year: ""
-  })
+  const [categoryId, setCategoryId] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm({
+    resolver: zodResolver(formSchema),
+  });
+
+  const onSubmit = (data: any) => {
     // Here you would typically send this data to your backend
-    console.log("Booking submitted:", { serviceType, date, time, vehicleDetails })
-    // You could also add some feedback for the user here
-  }
+    console.log("Service submitted:", data);
+  };
 
   return (
     <Card className="w-full mx-auto">
       <CardHeader>
-        <CardTitle className='text-Text'>Book a Service Appointment</CardTitle>
-        <CardDescription>Schedule your vehicle service with us</CardDescription>
+        <CardTitle className='text-Text'>Add a Service</CardTitle>
+        <CardDescription>Provide the details of the service you want to add.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="service-type">Service Type</Label>
-            <Select onValueChange={setServiceType} required>
-              <SelectTrigger id="service-type">
-                <SelectValue placeholder="Select a service" />
+            <Label htmlFor="service-name">Service Name</Label>
+            <Input
+              id="service-name"
+              placeholder="Enter the service name"
+              {...register("name")}
+            />
+            {errors.name && <p className="text-red-500">{String(errors.name.message)}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="service-description">Description</Label>
+            <Input
+              id="service-description"
+              placeholder="Enter the service description"
+              {...register("description")}
+            />
+            {errors.description && <p className="text-red-500">{String(errors.description.message)}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="service-price">Price</Label>
+            <Input
+              id="service-price"
+              placeholder="Enter the service price"
+              type="number"
+              step="0.01"
+              min="0"
+              {...register("price")}
+            />
+            {errors.price && <p className="text-red-500">{String(errors.price.message)}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="service-category">Category</Label>
+            <Select onValueChange={(value) => {
+              setCategoryId(value);
+              setValue("categoryId", value);
+            }}>
+              <SelectTrigger id="service-category">
+                <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="oil-change">Oil Change</SelectItem>
-                <SelectItem value="tire-replacement">Tire Replacement</SelectItem>
-                <SelectItem value="brake-service">Brake Service</SelectItem>
-                <SelectItem value="general-inspection">General Inspection</SelectItem>
+                <SelectItem value="1">Category 1</SelectItem>
+                <SelectItem value="2">Category 2</SelectItem>
+                <SelectItem value="3">Category 3</SelectItem>
               </SelectContent>
             </Select>
+            {errors.categoryId && <p className="text-red-500">{String(errors.categoryId.message)}</p>}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Appointment Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={`w-full justify-start text-left font-normal ${!date && "text-muted-foreground"}`}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="appointment-time">Appointment Time</Label>
-              <Select onValueChange={setTime} required>
-                <SelectTrigger id="appointment-time">
-                  <SelectValue placeholder="Select a time" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="09:00">09:00 AM</SelectItem>
-                  <SelectItem value="10:00">10:00 AM</SelectItem>
-                  <SelectItem value="11:00">11:00 AM</SelectItem>
-                  <SelectItem value="13:00">01:00 PM</SelectItem>
-                  <SelectItem value="14:00">02:00 PM</SelectItem>
-                  <SelectItem value="15:00">03:00 PM</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Vehicle Details</Label>
-            <div className="grid gap-4 sm:grid-cols-3">
-              <Input 
-                placeholder="Make" 
-                value={vehicleDetails.make}
-                onChange={(e) => setVehicleDetails(prev => ({ ...prev, make: e.target.value }))}
-                required
-              />
-              <Input 
-                placeholder="Model" 
-                value={vehicleDetails.model}
-                onChange={(e) => setVehicleDetails(prev => ({ ...prev, model: e.target.value }))}
-                required
-              />
-              <Input 
-                placeholder="Year" 
-                type="number" 
-                min="1900" 
-                max={new Date().getFullYear() + 1}
-                value={vehicleDetails.year}
-                onChange={(e) => setVehicleDetails(prev => ({ ...prev, year: e.target.value }))}
-                required
-              />
-            </div>
-          </div>
+          <Button type="submit" className="w-full">Add Service</Button>
         </form>
       </CardContent>
       <CardFooter>
-        <Button type="submit" className="w-full">Book Appointment</Button>
+        {/* Additional footer content can go here */}
       </CardFooter>
     </Card>
-  )
+  );
 }
-
