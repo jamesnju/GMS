@@ -1,19 +1,46 @@
-"use client"
+"use client";
+
 import React, { useEffect } from "react";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useSession } from "next-auth/react";
+import { updateDate } from "@/actions/Services";
+import Link from "next/link";
+import { toast } from "react-toastify";
 
 // Define the ServiceBookingFormProps interface
 interface ServiceBookingFormProps {
@@ -53,30 +80,28 @@ interface ServiceBookingFormProps {
 
 // Define the validation schema
 const formSchema = z.object({
-  serviceId: z.string().nonempty("Please select a service."),
+  serviceId: z.number().min(1, "Please select a service."),
   description: z.string().nonempty("Please provide a description."),
-  categoryId: z.string().nonempty("Please select a category."),
+  categoryId: z.number().min(1, "Please select a category."),
   userId: z.number().optional(),
   bookedDate: z.date({
     required_error: "Please select a date.",
   }),
-  price: z
-    .string()
-    .refine((val) => !isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0, {
-      message: "Please provide a valid price.",
-    }),
 });
 
-const EditServiceBookingForm = ({ bookingData }: { bookingData: ServiceBookingFormProps }) => {
+const EditServiceBookingForm = ({
+  bookingData,
+}: {
+  bookingData: ServiceBookingFormProps;
+}) => {
   const { data: session } = useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      serviceId: bookingData.serviceId.toString(),
+      serviceId: bookingData.serviceId,
       description: bookingData.description,
-      categoryId: bookingData.categoryId.toString(),
-      price: bookingData.service.price.toString(),
+      categoryId: bookingData.categoryId,
       bookedDate: new Date(bookingData.bookedDate),
       userId: session?.user?.id,
     },
@@ -85,34 +110,54 @@ const EditServiceBookingForm = ({ bookingData }: { bookingData: ServiceBookingFo
   useEffect(() => {
     if (bookingData) {
       form.reset({
-        serviceId: bookingData.serviceId.toString(),
+        serviceId: bookingData.serviceId,
         description: bookingData.description,
-        categoryId: bookingData.categoryId.toString(),
-        price: bookingData.service.price.toString(),
+        categoryId: bookingData.categoryId,
         bookedDate: new Date(bookingData.bookedDate),
+        userId: session?.user?.id,
       });
     }
-  }, [bookingData, form]);
+  }, [bookingData, form, session]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log("Form submitted:", values);
+    try {
+      const data = await updateDate(
+        values as {
+          serviceId: number;
+          description: string;
+          categoryId: number;
+          bookedDate: Date;
+          userId?: number;
+        },
+        bookingData.id
+      );
+      console.log(data, "the updates");
+      toast.success("Booking service updated successfuly");
+      form.reset();
 
-    // Proceed with the service booking logic, e.g., API call
-    if (bookingData) {
-      console.log("Updating booking:", values);
-    } else {
-      console.log("Creating new booking:", values);
+      // Handle the success (e.g., display a success message, redirect, etc.)
+    } catch (error) {
+      toast.error("Failed to update booking");
+      console.error("Failed to update booking:", error);
+      // Handle the error (e.g., display an error message)
     }
-
     form.reset();
   };
 
   return (
     <Card className="mx-auto bg-red-300 h-screen">
       <CardHeader>
-        <CardTitle>{bookingData ? "Edit Service Booking" : "Service Booking"}</CardTitle>
+        <Link href="/servicesBooking">
+          <Button>Back</Button>
+        </Link>
+        <CardTitle>
+          {bookingData ? "Edit Service Booking" : "Service Booking"}
+        </CardTitle>
         <CardDescription>
-          {bookingData ? "Update your service appointment details." : "Book your service appointment here."}
+          {bookingData
+            ? "Update your service appointment details."
+            : "Book your service appointment here."}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -125,14 +170,20 @@ const EditServiceBookingForm = ({ bookingData }: { bookingData: ServiceBookingFo
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Service</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    defaultValue={field.value.toString()}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a service" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem key={bookingData.service.id} value={bookingData.service.id.toString()}>
+                      <SelectItem
+                        key={bookingData.service.id}
+                        value={bookingData.service.id.toString()}
+                      >
                         {bookingData.service.name}
                       </SelectItem>
                     </SelectContent>
@@ -150,7 +201,10 @@ const EditServiceBookingForm = ({ bookingData }: { bookingData: ServiceBookingFo
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter a description for the service" />
+                    <Input
+                      {...field}
+                      placeholder="Enter a description for the service"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -164,14 +218,20 @@ const EditServiceBookingForm = ({ bookingData }: { bookingData: ServiceBookingFo
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    defaultValue={field.value.toString()}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem key={bookingData.category.id} value={bookingData.category.id.toString()}>
+                      <SelectItem
+                        key={bookingData.category.id}
+                        value={bookingData.category.id.toString()}
+                      >
                         {bookingData.category.name}
                       </SelectItem>
                     </SelectContent>
@@ -193,9 +253,16 @@ const EditServiceBookingForm = ({ bookingData }: { bookingData: ServiceBookingFo
                       <FormControl>
                         <Button
                           variant={"outline"}
-                          className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
                         >
-                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
@@ -205,26 +272,13 @@ const EditServiceBookingForm = ({ bookingData }: { bookingData: ServiceBookingFo
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date) => date < new Date() || date > new Date("2100-01-01")}
+                        disabled={(date) =>
+                          date < new Date() || date > new Date("2100-01-01")
+                        }
                         initialFocus
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Price Input */}
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" min="0" {...field} />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

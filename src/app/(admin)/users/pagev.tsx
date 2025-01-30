@@ -22,7 +22,7 @@ const PageView: React.FC<PageViewProps> = ({ Users }) => {
   // const editdata = useSelector((state: RootState) => state.edit.editData)
 
   return (
-    <Card className="bg-Background h-screen w-full">
+    <Card className=" h-screen w-full">
       {/* <div className='overflow-hidden mx-28 rounded-md shadow-lg '> */}
       <CardHeader>
         <CardTitle className="text-Text">Admin User Management</CardTitle>
@@ -31,7 +31,7 @@ const PageView: React.FC<PageViewProps> = ({ Users }) => {
         </CardDescription>
       </CardHeader>
       <div className="flex w-full flex-end justify-end mr-28 -mx-5">
-        <Link href="/addService">
+        <Link href="/addUser">
           <Button className="flex-end font-bold text-white px-6 py-3 rounded-md">
             Add New User
           </Button>

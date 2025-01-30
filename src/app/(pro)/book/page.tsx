@@ -5,7 +5,7 @@ import React from 'react'
 const page = async() => {
   const services = await getAllServices() || [];
   const serviceCategories = await getAllServicesCategory() || [];
-  console.log(services, "the service")
+  //console.log(services, "the service")
   return (
     <div className='h-screen"'>
       <BookServices services={services} categories={serviceCategories}/>

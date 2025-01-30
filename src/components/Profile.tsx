@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,13 +13,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 // import { toast } from "@/components/ui/use-toast"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { toast } from "@/hooks/use-toast"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { toast } from "@/hooks/use-toast";
 
+import { useSession } from "next-auth/react";
+import { postVehicle } from "@/actions/Vehicle";
+import { Loader } from "lucide-react";
+import { toast } from "react-toastify";
+// interface Car {
+//   name: string;
+//   model: string;
+//   year: number;
+// }
 const profileSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -30,28 +45,39 @@ const profileSchema = z.object({
   phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, {
     message: "Please enter a valid phone number.",
   }),
-})
+});
 
 const vehicleSchema = z.object({
   make: z.string().min(1, { message: "Make is required." }),
   model: z.string().min(1, { message: "Model is required." }),
-  year: z.string().regex(/^\d{4}$/, { message: "Please enter a valid year." }),
+  year: z.string().regex(/^\d{4}$/, { message: "Please enter a valid year." }).transform((val)=> Number ((val))).refine((val) => val >= 1900),
   licensePlate: z.string().min(1, { message: "License plate is required." }),
-})
+  userId: z.number().optional(),
+});
 
-const passwordSchema = z.object({
-  currentPassword: z.string().min(8, { message: "Password must be at least 8 characters." }),
-  newPassword: z.string().min(8, { message: "Password must be at least 8 characters." }),
-  confirmPassword: z.string().min(8, { message: "Password must be at least 8 characters." }),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+const passwordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters." }),
+    newPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters." }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters." }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export function Profile() {
+  const [isLoading, setIsLoading] = useState(false);
+  const { data: session } = useSession();
   const [vehicles, setVehicles] = useState([
-    { make: "Toyota", model: "Camry", year: "2020", licensePlate: "ABC123" },
-  ])
+    { make: "Toyota", model: "Camry", year: 2020, licensePlate: "ABC123" },
+  ]);
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -60,17 +86,18 @@ export function Profile() {
       email: "john@example.com",
       phone: "+1234567890",
     },
-  })
+  });
 
   const vehicleForm = useForm<z.infer<typeof vehicleSchema>>({
     resolver: zodResolver(vehicleSchema),
     defaultValues: {
       make: "",
       model: "",
-      year: "",
+      year: 2020,
       licensePlate: "",
+      userId: session?.user.id
     },
-  })
+  });
 
   const passwordForm = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
@@ -79,36 +106,61 @@ export function Profile() {
       newPassword: "",
       confirmPassword: "",
     },
-  })
+  });
 
   function onProfileSubmit() {
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been updated successfully.",
-    })
+    // toast({
+    //   title: "Profile updated",
+    //   description: "Your profile information has been updated successfully.",
+    // });
   }
+  const userId = session?.user?.id;
+  async function onVehicleSubmit(values: z.infer<typeof vehicleSchema>) {
+    setVehicles([...vehicles, values]);
+    console.log(values, "car values");
+    const cardetails = {
+      ...values,
+      userId,
+     
+    };
+    try {
+      
+      setIsLoading(true);
+      const res = await postVehicle(cardetails);
+      if(res.ok){
+        toast.error('something went Wrong!');
+        setIsLoading(false);
+      }
+      setIsLoading(false);
+      toast.success("vehicle addded");
+      vehicleForm.reset();
+     
 
-  function onVehicleSubmit(values: z.infer<typeof vehicleSchema>) {
-    setVehicles([...vehicles, values])
-    vehicleForm.reset()
-    toast({
-      title: "Vehicle added",
-      description: "Your vehicle has been added successfully.",
-    })
+    } catch (error) {
+      setIsLoading(false);
+      toast.error("something went wrong")
+
+    }
+    // toast({
+    //   title: "Vehicle added",
+    //   description: "Your vehicle has been added successfully.",
+    // });
   }
 
   function onPasswordSubmit() {
-    toast({
-      title: "Password changed",
-      description: "Your password has been changed successfully.",
-    })
+    // toast({
+    //   title: "Password changed",
+    //   description: "Your password has been changed successfully.",
+    // });
   }
 
   return (
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader>
         <CardTitle>Profile</CardTitle>
-        <CardDescription>Manage your account settings and preferences.</CardDescription>
+        <CardDescription>
+          Manage your account settings and preferences.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="personal" className="w-full">
@@ -118,8 +170,12 @@ export function Profile() {
             <TabsTrigger value="password">Password</TabsTrigger>
           </TabsList>
           <TabsContent value="personal">
+            {/* profile infor */}
             <Form {...profileForm}>
-              <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-8">
+              <form
+                onSubmit={profileForm.handleSubmit(onProfileSubmit)}
+                className="space-y-8"
+              >
                 <FormField
                   control={profileForm.control}
                   name="name"
@@ -127,7 +183,7 @@ export function Profile() {
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                        <Input placeholder="John " {...field} readOnly />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -140,7 +196,12 @@ export function Profile() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="john@example.com" {...field} />
+                        <Input
+                          placeholder="john@example.com"
+                          {...field}
+                          value={session?.user?.email}
+                          disabled
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -151,17 +212,24 @@ export function Profile() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel>Role</FormLabel>
                       <FormControl>
-                        <Input placeholder="+1234567890" {...field} />
+                        <Input
+                          placeholder="customer"
+                          {...field}
+                          value={session?.user?.role}
+                          disabled
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit">Update Profile</Button>
+                {/* <Button type="submit">Update Profile</Button> */}
               </form>
             </Form>
+
+            {/* vehicle details */}
           </TabsContent>
           <TabsContent value="vehicles">
             <div className="space-y-8">
@@ -170,16 +238,27 @@ export function Profile() {
                 <ul className="mt-4 space-y-4">
                   {vehicles.map((vehicle, index) => (
                     <li key={index} className="bg-muted p-4 rounded-md">
-                      <p><strong>Make:</strong> {vehicle.make}</p>
-                      <p><strong>Model:</strong> {vehicle.model}</p>
-                      <p><strong>Year:</strong> {vehicle.year}</p>
-                      <p><strong>License Plate:</strong> {vehicle.licensePlate}</p>
+                      <p>
+                        <strong>Make:</strong> {vehicle.make}
+                      </p>
+                      <p>
+                        <strong>Model:</strong> {vehicle.model}
+                      </p>
+                      <p>
+                        <strong>Year:</strong> {vehicle.year}
+                      </p>
+                      <p>
+                        <strong>License Plate:</strong> {vehicle.licensePlate}
+                      </p>
                     </li>
                   ))}
                 </ul>
               </div>
               <Form {...vehicleForm}>
-                <form onSubmit={vehicleForm.handleSubmit(onVehicleSubmit)} className="space-y-8">
+                <form
+                  onSubmit={vehicleForm.handleSubmit(onVehicleSubmit)}
+                  className="space-y-8"
+                >
                   <FormField
                     control={vehicleForm.control}
                     name="make"
@@ -232,14 +311,23 @@ export function Profile() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit">Add Vehicle</Button>
+                  <Button type="submit">
+                    {isLoading ? (
+                      <Loader className="text-white animate animate-spin" />
+                    ) : (
+                      "Add Vehicle"
+                    )}
+                  </Button>
                 </form>
               </Form>
             </div>
           </TabsContent>
           <TabsContent value="password">
             <Form {...passwordForm}>
-              <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-8">
+              <form
+                onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
+                className="space-y-8"
+              >
                 <FormField
                   control={passwordForm.control}
                   name="currentPassword"
@@ -286,6 +374,5 @@ export function Profile() {
         </Tabs>
       </CardContent>
     </Card>
-  )
+  );
 }
-

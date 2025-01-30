@@ -16,19 +16,19 @@ import { seteditData, toggleEdit } from "@/store/slice/editSlice";
 import { useDispatch } from "react-redux";
 import Link from "next/link";
 import Modal from 'react-modal';
-import axios from 'axios';
+import { deleteBookedService } from "@/actions/Services";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
+// Define the type for the services data
 export type services = {
   id: number;
   name: string;
   description: string;
   categoryId: string;
   createdAt: string;
-  price: number;
+  status: string;
 };
 
+// Component to render action buttons for each row
 const ActionsCell = ({ row }: { row: { original: services } }) => {
   const dispatch = useDispatch();
   const services = row.original;
@@ -39,10 +39,15 @@ const ActionsCell = ({ row }: { row: { original: services } }) => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`/api/services/${services.id}`);
+      const res = await deleteBookedService(services.id);
+        
       // Handle successful deletion (e.g., refetch data, show success message)
+      console.log(res);
+      // alert(res);
+      
     } catch (error) {
       console.error("Failed to delete service", error);
+      alert("error")
       // Handle error (e.g., show error message)
     } finally {
       closeModal();
@@ -94,6 +99,7 @@ const ActionsCell = ({ row }: { row: { original: services } }) => {
   );
 };
 
+// Define the columns for the table
 export const columns: ColumnDef<services>[] = [
   {
     accessorKey: "id",
@@ -114,7 +120,7 @@ export const columns: ColumnDef<services>[] = [
     },
   },
   {
-    accessorKey: "name",
+    accessorKey: "name",  // Corrected accessorKey to match the data structure
     header: ({ column }) => {
       return (
         <Button
@@ -142,16 +148,16 @@ export const columns: ColumnDef<services>[] = [
     },
   },
   {
-    accessorKey: "price",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "status",
+    header: "status",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("price"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
+      return (
+        <div className="flex space-x-2">
+          <span className={`${row.original.status === "Pending" ? "text-orange-300" : row.original.status === "Canceled" ? "text-red-600" : row.original.status  === "Confirmed" ? "text-green-400" : "" } max-w-[500px] truncate font-medium`}>
+            {row.original?.status}
+          </span>
+        </div>
+      );
     },
   },
   {
@@ -170,6 +176,6 @@ export const columns: ColumnDef<services>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => <ActionsCell row={row} />,
+    cell: ActionsCell, // Use the ActionsCell component as a reference
   },
 ];

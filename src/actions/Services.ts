@@ -1,12 +1,13 @@
 "use server"
 
+import { Service } from "@/Globalcomponents/admin/manageSerives/AddService";
 import baseUrl from "@/utils/constant"
 
-interface Datavalues {
-    id: number
-    name: string
-    description: string
-  }
+// interface Datavalues {
+//     id: number
+//     name: string
+//     description: string
+//   }
 export const getAllServices = async () => {
 
     try {
@@ -51,8 +52,23 @@ export const getAllServicesCategory = async () => {
 }
 //book services
 
+
+export const getBookedServices = async () => {
+    const res = await fetch(baseUrl + "bookings",{
+        method:"GET",
+        headers:{
+            "Content-Type": "application/json",
+        }
+        
+    })
+    if(!res.ok){
+        throw new Error("Failed to fetch services");
+    }
+    const data = await res.json();
+    return data.data;
+}
+
 export const postBookService = async(Datavalues: { userId: number | undefined; serviceId: number; description: string; categoryId: number; bookedDate: Date })=>{
-    console.log(Datavalues, "server======================")
     const res = await fetch( baseUrl + "booking",{
         method: "POST",
         headers:{
@@ -60,7 +76,6 @@ export const postBookService = async(Datavalues: { userId: number | undefined; s
         },
         body: JSON.stringify(Datavalues)
     })
-    console.log(res ,"res================================")
     if(!res.ok){
         throw new Error("something went wrong"); 
     }
@@ -85,3 +100,66 @@ export const getBookingById = async (id: number): Promise< null>=>{
 
     return data?.data;
 }
+
+export const updateDate = async (
+    values: { serviceId: number; description: string; categoryId: number; bookedDate: Date; userId?: number },
+    id: number
+  ) => {
+    const formattedValues = {
+      ...values,
+      bookedDate: values.bookedDate.toISOString(), // Ensure the date is in the correct format
+    };
+  
+    const res = await fetch(`${baseUrl}${id}/booking`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formattedValues),
+    });
+  
+    if (!res.ok) {
+      throw new Error("Something went wrong");
+    }
+  
+    const data = await res.json();
+    return data;
+  };
+
+
+  //delte
+
+  export const deleteBookedService = async(id: number) =>{
+    try {
+        const res = await fetch(`${baseUrl}${id}/appointment`);
+          
+        // Handle successful deletion (e.g., refetch data, show success message)
+        console.log(res);
+        // alert(res);
+        
+      } catch (error) {
+        console.error("Failed to delete service", error);
+        alert("error")
+        // Handle error (e.g., show error message)
+      } 
+  }
+
+
+  //
+  export async function postService(data: Service) {
+  
+    const res = await fetch(baseUrl + "service", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Corrected header key
+      },
+      body: JSON.stringify(data),
+    });
+  
+    if (!res.ok) {
+      throw new Error("Something went wrong");
+    }
+  
+    return await res.json();
+  }
+  

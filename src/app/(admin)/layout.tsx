@@ -17,12 +17,12 @@ export default function RootLayout({
   return (
     <NextAuthSessionProvider>
         <SidebarProvider defaultOpen={true} className=''>
-          <div className="flex h-screen w-screen overflow-hidden ">
+          <div className="flex h-screen w-screen">
             <AppSidebar />
             <div className="flex-1 flex flex-col">
               
               <Navbar />
-              <main className="flex-1  bg-background mt-32 m-10 mx-24 overflow-hidden h-screen">
+              <main className="flex-1 bg-background mt-32 m-10 mx-24 h-screen">
                 {children}
               </main>
             </div>

@@ -1,9 +1,13 @@
+import { getAllServices, getAllServicesCategory } from '@/actions/Services'
 import { Button } from '@/components/ui/button'
 import AddService from '@/Globalcomponents/admin/manageSerives/AddService'
 import Link from 'next/link'
 import React from 'react'
 
-const page = () => {
+const page = async () => {
+  const services = await getAllServices() || [];
+  const serviceCategories = await getAllServicesCategory() || [];
+  console.log(services, serviceCategories, "the data service")
   return (
     <div>
         <div className="flex w-full flex-end justify-end mr-28 -mx-5">
@@ -13,7 +17,7 @@ const page = () => {
           </Button>
         </Link>
       </div>
-        <AddService/>
+        <AddService services={services} serviceCategories={serviceCategories}/>
     </div>
   )
 }

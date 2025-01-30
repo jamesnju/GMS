@@ -1,26 +1,34 @@
-import { getUserById } from '@/actions/User';
-import EditUser from '@/Globalcomponents/admin/EditUser';
-import React from 'react'
+import { getUserById } from "@/actions/User";
+import EditUser from "@/Globalcomponents/admin/EditUser";
+import React from "react";
 
 interface PageProps {
-    params: Promise<{ id: string; }>;
+  params: { id: string }; // Fixed to match the actual structure
 }
 
+// This is a server component by default
 const Page = async ({ params }: PageProps) => {
-  const { id } = await params;
-  const userId = parseInt(id, 10); // Ensure the id is a number
+  try {
+    const userId =await  parseInt(params.id, 10); // Convert id to number
+    if (isNaN(userId)) {
+      throw new Error("Invalid user ID");
+    }
 
-  const userData = await getUserById(userId);
+    const userData = await getUserById(userId);
 
-  return (
+    return (
       <div>
-          {userData ? (
-              <EditUser userData={userData} />
-          ) : (
-              <div>Error fetching user data. Please try again.</div>
-          )}
+        {userData ? (
+          <EditUser userData={userData} />
+        ) : (
+          <div>No user data found. Please try again.</div>
+        )}
       </div>
-  );
+    );
+  } catch (error) {
+    console.error("Error in Page component:", error);
+    return <div>Error loading user data. Please try again later.</div>;
+  }
 };
 
 export default Page;

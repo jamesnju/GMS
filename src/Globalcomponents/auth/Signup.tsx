@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useSession } from "next-auth/react";
 
 // Define the validation schema
 const formSchema = z.object({
@@ -23,6 +24,7 @@ type FormData = z.infer<typeof formSchema>;
 const Signup = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const {data: session} = useSession()
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -34,13 +36,14 @@ const Signup = () => {
       const res = await registerUser(data);
       if (!res.data) {
         const result = await res;
+      
         toast.success("Registration successful!");
-        router.push("/auth");
+        //router.push("/auth");
         return result.data;
       }
       throw new Error("Network error");
     } catch (error) {
-      console.log(error, "Error occurred");
+      //console.log(error, "Error occurred");
       toast.error("Registration failed. Please try again.");
     } finally {
       setLoading(false);
@@ -78,9 +81,19 @@ const Signup = () => {
         />
         {errors.password && <p className="text-red-500">{errors.password.message}</p>}
       </div>
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Signing Up..." : "Sign Up"}
+      {session === null ? (
+         <Button type="submit" className="w-full" disabled={loading}>
+
+         {loading ? "Signing Up..." : "Sign Up"}
+       </Button>
+      )
+      :(
+        <Button type="submit" className="w-full" disabled={loading}>
+
+        {loading ? "Adding user..." : "Add user"}
       </Button>
+      )}
+     
     </form>
   );
 };
