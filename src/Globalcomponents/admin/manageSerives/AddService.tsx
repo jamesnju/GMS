@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Form, useForm } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { postService } from "@/actions/Services";
@@ -44,7 +44,7 @@ export interface Category {
 // Define the type for the form data based on the schema
 type FormData = z.infer<typeof formSchema>;
 
-export default function AddService({ services, serviceCategories }: { serviceCategories: Category[]; services: Service[] }) {
+export default function AddService({ serviceCategories }: { serviceCategories: Category[]; }) {
   const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
@@ -64,12 +64,23 @@ export default function AddService({ services, serviceCategories }: { serviceCat
 
     try {
       const res = await postService(serviceData);
-      
-      toast.success("Service added successfully")
-      //console.log("Service submitted:", res);
+      if(res.ok){
+
+        setIsLoading(true)
+        toast.success("Service added successfully")
+        //console.log("Service submitted:", res);
+        setIsLoading(false)
+      }else{
+        setIsLoading(true)
+
+        toast.error("Error submitting service");
+        setIsLoading(false)
+
+      }
     } catch (error) {
-      toast.error("Error submitting service")
-      //console.error("Error submitting service:", error);
+      toast.error("Error submitting service");
+
+      console.error("Error submitting service:", error);
     }
   };
 

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerUser } from "@/actions/Auth";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,7 +23,7 @@ type FormData = z.infer<typeof formSchema>;
 
 const Signup = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const router = useRouter();
+  //const router = useRouter();
   const {data: session} = useSession()
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -43,7 +43,7 @@ const Signup = () => {
       }
       throw new Error("Network error");
     } catch (error) {
-      //console.log(error, "Error occurred");
+      console.log(error, "Error occurred");
       toast.error("Registration failed. Please try again.");
     } finally {
       setLoading(false);

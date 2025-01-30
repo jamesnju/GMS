@@ -8,8 +8,20 @@ interface User {
   password: string;
 }
 
-// Function to fetch user data by ID
-export const getUserById = async (id: number): Promise<User | null> => {
+// // Function to fetch user data by ID
+// export const getUserById = async (id: number) => {
+
+//   try {
+//     const response = await axios.get(baseUrl + `${id}/user`);
+    
+//     return response?.d ?? [];
+    
+    
+//   } catch (e: any) {
+//     return [e.message, 400];
+//   }
+// };
+export async function getUserById(id: number){
   try {
     const res = await fetch(`${baseUrl}${id}/user`, {
       method: "GET",

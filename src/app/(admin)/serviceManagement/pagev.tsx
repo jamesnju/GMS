@@ -9,13 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getAllServices, getAllServicesCategory } from "@/actions/Services";
+import { getAllServices,  } from "@/actions/Services";
 
 
 
 const PageView = async () => {
    const services = await getAllServices() || [];
-    const serviceCategories = await getAllServicesCategory() || [];
   //   const editdata = useSelector((state: RootState) => state.property.editdata)
 
   return (

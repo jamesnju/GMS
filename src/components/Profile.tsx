@@ -139,6 +139,7 @@ export function Profile() {
     } catch (error) {
       setIsLoading(false);
       toast.error("something went wrong")
+      console.log(error)
 
     }
     // toast({

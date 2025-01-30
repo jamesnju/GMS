@@ -2,33 +2,24 @@ import { getUserById } from "@/actions/User";
 import EditUser from "@/Globalcomponents/admin/EditUser";
 import React from "react";
 
-interface PageProps {
-  params: { id: string }; // Fixed to match the actual structure
-}
+// interface PageProps {
+//   params: { id: string };
+// }
 
-// This is a server component by default
-const Page = async ({ params }: PageProps) => {
-  try {
-    const userId =await  parseInt(params.id, 10); // Convert id to number
-    if (isNaN(userId)) {
-      throw new Error("Invalid user ID");
-    }
+const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const  id = params;
 
-    const userData = await getUserById(userId);
+  const userData = await getUserById(Number(id));
 
-    return (
-      <div>
-        {userData ? (
-          <EditUser userData={userData} />
-        ) : (
-          <div>No user data found. Please try again.</div>
-        )}
-      </div>
-    );
-  } catch (error) {
-    console.error("Error in Page component:", error);
-    return <div>Error loading user data. Please try again later.</div>;
+  if (!userData) {
+    return <div>User not found</div>;
   }
+
+  return (
+    <div>
+      <EditUser userData={userData} />
+    </div>
+  );
 };
 
 export default Page;

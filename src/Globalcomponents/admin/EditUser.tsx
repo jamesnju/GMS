@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import React, { useState } from "react";
 import {
   Card,
@@ -19,14 +18,13 @@ import { updateUser } from "@/actions/User";
 import { toast } from "react-toastify";
 import { Loader } from "lucide-react";
 
-// Define the User interface
 interface User {
-  id: number; // Add the id field to the User interface
+  id: number;  // Or string, depending on your backend
   name: string;
   email: string;
-  password: string;
+  password: string; // Password might be optional on the frontend
+  // ... other properties of your user object
 }
-
 // Define the validation schema
 const formSchema = z.object({
   name: z.string().nonempty("Name is required"),
@@ -37,35 +35,50 @@ const formSchema = z.object({
   password: z.string().nonempty("Password is required"),
 });
 
+
+
+// Infer the form data type from the schema
+type FormData = z.infer<typeof formSchema>;
+
 const EditUser = ({ userData }: { userData: User }) => {
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-  } = useForm({
+    reset, // Add reset function
+  } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: userData,
+    defaultValues: { // Make sure default values match FormData
+      name: userData.name,
+      email: userData.email,
+      password: userData.password , // provide default for password
+    },
   });
 
-  const onSubmit = async (data: Partial<User>) => {
-    // Only update the fields that are provided
-    const updatedData = {
-      id: userData.id, // Include the id field
-      name: data.name || userData.name,
-      email: data.email || userData.email,
-      password: data.password || userData.password,
-    };
-
-    // Call the updateUser function with id and updatedData
+  const onSubmit = async (data: FormData) => {
+    setIsLoading(true); // Set loading *before* the API call
     try {
-      const res = await updateUser(userData.id, updatedData); // Pass the id and updatedData
-      console.log("User data submitted:", updatedData);
-      toast.success("User updated successfully");
+      const updatedData: User = { // Type the updatedData
+        id: userData.id,
+        name: data.name, // No need for || if defaultValues are set correctly
+        email: data.email,
+        password: data.password ?? "", // Ensure password is always a string
+      };
+
+      const res = await updateUser(userData.id, updatedData);
+      if (res.ok) {
+        toast.success("User updated successfully");
+        reset(); // Reset the form after successful update
+      } else {
+        const errorData = await res.json(); // Get error details from the backend
+        toast.error(`Failed to update user: ${errorData.message || 'Unknown error'}`); // Display error message from the backend
+      }
     } catch (error) {
-      toast.error("something went wrong");
+      toast.error("Something went wrong");
       console.error("Failed to update user:", error);
+    } finally {
+      setIsLoading(false); // Always set loading to false, even if there's an error
     }
   };
 
