@@ -41,7 +41,7 @@ export default function AddServiceCategory() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
