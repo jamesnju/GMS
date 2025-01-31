@@ -3,9 +3,7 @@ import EditUser from "@/Globalcomponents/admin/EditUser";
 import React from "react";
 export const dynamic = "force-dynamic"
 
-interface PageProps {
-  params: { id: number };
-}
+
 
 const Page = async ({ params } : {params:Promise<{id:number}>}) => {
   const { id } =  await params;
