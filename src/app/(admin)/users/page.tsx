@@ -1,6 +1,7 @@
 import React from 'react';
 import PageView from './pagev';
 import { getAllUser } from '@/actions/Auth';
+export const dynamic = "force-dynamic"
 
 const page = async () => {
   let Users = [];

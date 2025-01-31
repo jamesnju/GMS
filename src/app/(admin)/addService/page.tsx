@@ -3,9 +3,16 @@ import { Button } from '@/components/ui/button'
 import AddService from '@/Globalcomponents/admin/manageSerives/AddService'
 import Link from 'next/link'
 import React from 'react'
+export const dynamic = "force-dynamic"
+
 
 const page = async () => {
   const serviceCategories = await getAllServicesCategory() || [];
+  if(!serviceCategories){
+    return {
+      notFound: true,
+    }
+  }
   //console.log( serviceCategories, "the data service")
   return (
     <div>

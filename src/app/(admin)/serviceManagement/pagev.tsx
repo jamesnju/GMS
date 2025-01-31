@@ -10,13 +10,16 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getAllServices,  } from "@/actions/Services";
+export const dynamic = "force-dynamic"
 
 
 
 const PageView = async () => {
    const services = await getAllServices() || [];
   //   const editdata = useSelector((state: RootState) => state.property.editdata)
-
+if(!services){
+  return <div> No Data </div>
+}
   return (
     <Card>
       {/* <div className='overflow-hidden mx-28 rounded-md shadow-lg '> */}

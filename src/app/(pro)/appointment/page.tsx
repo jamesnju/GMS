@@ -5,13 +5,17 @@ import { DataTable } from '@/shacdn/data-table';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getBookedServices } from '@/actions/Services';
 // import { Button } from '@/components/ui/button';
+export const dynamic = "force-dynamic"
 
 
 
 const PageView = async() => {
   const BookingsResponse = await getBookedServices() || [];
 //   const editdata = useSelector((state: RootState) => state.property.editdata)
-console.log(BookingsResponse, "BookingsResponse======================");
+//console.log(BookingsResponse, "BookingsResponse======================");
+if(!BookingsResponse){
+  return <div> No Data </div>
+}
 
   return (
     <Card>

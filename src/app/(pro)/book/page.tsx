@@ -1,6 +1,7 @@
 import { getAllServices, getAllServicesCategory } from '@/actions/Services';
 import BookServices from '@/Globalcomponents/BookServices'
 import React from 'react'
+export const dynamic = "force-dynamic"
 
 const page = async() => {
   const services = await getAllServices() || [];
