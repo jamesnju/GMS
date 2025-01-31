@@ -71,6 +71,7 @@ export async function getAllUser(){
       "Content-Type": "application/json",
     },
   })
+  console.log(res.status, res.body, "status")
 
   if(!res.ok){
     throw new Error('Something went Wrong');

@@ -1,6 +1,7 @@
 "use server"
 
 import { Service } from "@/Globalcomponents/admin/manageSerives/AddService";
+import { ServiceCategory } from "@/Globalcomponents/admin/manageSerives/AddServiceCategory";
 import baseUrl from "@/utils/constant"
 
 // interface Datavalues {
@@ -152,6 +153,22 @@ export const updateDate = async (
       method: "POST",
       headers: {
         "Content-Type": "application/json", // Corrected header key
+      },
+      body: JSON.stringify(data),
+    });
+  
+    if (!res.ok) {
+      throw new Error("Something went wrong");
+    }
+  
+    return await res.json();
+  }
+  export async function postServiceCategory(data: ServiceCategory) {
+  
+    const res = await fetch(baseUrl + "serviceCategory", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });

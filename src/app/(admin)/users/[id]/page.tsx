@@ -2,14 +2,14 @@ import { getUserById } from "@/actions/User";
 import EditUser from "@/Globalcomponents/admin/EditUser";
 import React from "react";
 
-// interface PageProps {
-//   params: { id: string };
-// }
+interface PageProps {
+  params: { id: number };
+}
 
-const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const  id = params;
+const Page = async ({ params }: PageProps) => {
+  const { id } =  params;
 
-  const userData = await getUserById(Number(id));
+  const userData = await getUserById(id);
 
   if (!userData) {
     return <div>User not found</div>;

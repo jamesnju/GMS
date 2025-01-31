@@ -67,12 +67,12 @@ const EditUser = ({ userData }: { userData: User }) => {
       };
 
       const res = await updateUser(userData.id, updatedData);
-      if (res.ok) {
+      if (!res.ok) {
         toast.success("User updated successfully");
         reset(); // Reset the form after successful update
       } else {
-        const errorData = await res.json(); // Get error details from the backend
-        toast.error(`Failed to update user: ${errorData.message || 'Unknown error'}`); // Display error message from the backend
+        //const errorData = await res.json(); // Get error details from the backend
+        toast.error(`Failed to update user`); // Display error message from the backend
       }
     } catch (error) {
       toast.error("Something went wrong");

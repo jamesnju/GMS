@@ -32,7 +32,12 @@ if(!services){
       <div className="flex w-full flex-end justify-end mr-28 -mx-5">
         <Link href="/addService">
           <Button className="flex-end  font-bold  text white px-6 py-3 rounded-md  text-white">
-            Add New service
+            New service
+          </Button>
+        </Link>
+        <Link href="/addServiceCategory">
+          <Button className="flex-end  font-bold  text white px-6 py-3 rounded-md  text-white">
+            service Category
           </Button>
         </Link>
       </div>

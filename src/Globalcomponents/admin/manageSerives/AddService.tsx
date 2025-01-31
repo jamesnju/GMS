@@ -64,8 +64,7 @@ export default function AddService({ serviceCategories }: { serviceCategories: C
 
     try {
       const res = await postService(serviceData);
-      if(res.ok){
-
+      if(!res.ok){
         setIsLoading(true)
         toast.success("Service added successfully")
         //console.log("Service submitted:", res);
