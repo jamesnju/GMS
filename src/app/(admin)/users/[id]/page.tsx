@@ -1,17 +1,14 @@
 import { getUserById } from "@/actions/User";
 import EditUser from "@/Globalcomponents/admin/EditUser";
 import React from "react";
+export const dynamic = "force-dynamic"
 
 interface PageProps {
-  params: { id: string };
+  params: { id: number };
 }
 
 const Page = async ({ params }: PageProps) => {
-  const id = Number(params.id); // Convert string to number
-
-  if (isNaN(id)) {
-    return <div>Invalid User ID</div>;
-  }
+  const { id } =  params;
 
   const userData = await getUserById(id);
 
@@ -25,4 +22,5 @@ const Page = async ({ params }: PageProps) => {
     </div>
   );
 };
+
 export default Page;
