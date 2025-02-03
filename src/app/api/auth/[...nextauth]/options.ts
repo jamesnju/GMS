@@ -58,7 +58,7 @@ export const options: NextAuthOptions = {
     // Callback to handle JWT creation after successful login
     async jwt({ token, user }) {
       if (user) {
-        token.id = Number(user.id); // Store user details in JWT token
+        token.id = user.id as number; // Store user details in JWT token
         token.email = user.email;
         token.role = user.role;
         token.name = user.name;
