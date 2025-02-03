@@ -24,7 +24,7 @@ export function Login() {
     e.preventDefault();
     setLoading(true);
 
-    const result = await signIn("credentials", {
+    const res = await signIn("credentials", {
       redirect: false,
       email,
       password,
@@ -34,7 +34,7 @@ export function Login() {
 
     setLoading(false);
 
-    if (!result.ok) {
+    if (!res.ok) {
       toast.error("Invalid email or password. Please try again.");
       router.push("/auth");
     } else {
