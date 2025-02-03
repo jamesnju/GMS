@@ -70,7 +70,7 @@ export function AppSidebar() {
         <div className="flex items-center space-x-4 mb-4">
           <Avatar>
             <AvatarImage src="/avatars/01.png" alt="User" />
-            <AvatarFallback>{session?.user?.name?.[0]}</AvatarFallback>
+            <AvatarFallback>{session?.user?.name?.[0].toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="space-y-1">
             <p className="text-sm font-medium leading-none text-Text">{session?.user.name}</p>

@@ -4,8 +4,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ChevronRight, Wrench, Car, Cog, Star, type LucideIcon } from "lucide-react"
+import { ChevronRight, Wrench, Car, Cog, Star, type LucideIcon, Menu, X } from "lucide-react"
 import { motion } from "framer-motion"
+import { useState } from "react"
 
 interface Service {
   name: string
@@ -77,6 +78,8 @@ const staggerChildren = {
 }
 
 export default function Home() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
       <motion.header
@@ -87,24 +90,51 @@ export default function Home() {
       >
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <Image src="/logo.png" alt="AutoPro Garage Logo" width={50} height={50} className="rounded-full" />
+            <Image src="/logo.png" alt="logo" width={50} height={50} className="rounded-full" />
             <h1 className="text-2xl font-bold">GMS</h1>
           </Link>
-          <nav>
-            <ul className="flex space-x-6">
-              {["Home", "Services", "About", "Contact", "Login"].map((item) => (
-                <motion.li key={item} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                  <Link
-                    href={item === "Login" ? "/auth" : `/${item.toLowerCase()}`}
-                    className="hover:text-yellow-300 transition duration-300"
-                  >
-                    {item}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </nav>
+          <div className="flex items-center">
+            <nav className="hidden md:block">
+              <ul className="flex space-x-6">
+                {["Home", "Services", "About", "Contact"].map((item) => (
+                  <motion.li key={item} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                    <Link href={`/${item.toLowerCase()}`} className="hover:text-yellow-300 transition duration-300">
+                      {item}
+                    </Link>
+                  </motion.li>
+                ))}
+              </ul>
+            </nav>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="ml-6">
+              <Link href="/auth" className="hover:text-yellow-300 transition duration-300">
+                Login
+              </Link>
+            </motion.div>
+            <button className="ml-4 md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
+        <motion.nav
+          className={`md:hidden ${isMenuOpen ? "block" : "hidden"}`}
+          initial={false}
+          animate={isMenuOpen ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <ul className="flex flex-col space-y-2 mt-4">
+            {["Home", "Services", "About", "Contact"].map((item) => (
+              <motion.li key={item} whileTap={{ scale: 0.95 }}>
+                <Link
+                  href={`/${item.toLowerCase()}`}
+                  className="block py-2 px-4 hover:bg-blue-700 rounded transition duration-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item}
+                </Link>
+              </motion.li>
+            ))}
+          </ul>
+        </motion.nav>
       </motion.header>
 
       <main className="flex-grow">
