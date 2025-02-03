@@ -123,7 +123,7 @@ const [isLoading, setIsLoading] = useState(false);
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log("Form submitted:", values);
     try {
-      const data = await updateDate(
+      const res = await updateDate(
         values as {
           serviceId: number;
           description: string;
@@ -134,10 +134,16 @@ const [isLoading, setIsLoading] = useState(false);
         bookingData.id
       );
       //console.log(data, "the updates");
-      setIsLoading(true)
-      toast.success("Booking service updated successfuly");
-      form.reset();
+      if(res.ok){
+
+        setIsLoading(true)
+        toast.success("Booking service updated successfuly");
+        form.reset();
+        setIsLoading(false);
+      }
+      throw new Error("Something Went Wrong");
       setIsLoading(false);
+
 
       // Handle the success (e.g., display a success message, redirect, etc.)
     } catch (error) {
