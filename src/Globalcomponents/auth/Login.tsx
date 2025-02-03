@@ -30,11 +30,11 @@ export function Login() {
       password,
     });
 
-    console.log(result, "------");
+    //console.log(result, "------");
 
     setLoading(false);
 
-    if (result?.error) {
+    if (!result.ok) {
       toast.error("Invalid email or password. Please try again.");
       router.push("/auth");
     } else {
