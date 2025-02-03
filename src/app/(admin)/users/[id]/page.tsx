@@ -10,9 +10,9 @@ const Page = async ({ params } : {params:Promise<{id:number}>}) => {
 
   const userData = await getUserById(id) || [];
 
-  // if (!userData) {
-  //   return <div>User not found</div>;
-  // }
+  if (!userData) {
+    return <div>User not found</div>;
+  }
 
   return (
     <div>
