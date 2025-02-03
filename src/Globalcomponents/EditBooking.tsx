@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { CalendarIcon } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { CalendarIcon,Loader } from "lucide-react";
+
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -95,7 +96,7 @@ const EditServiceBookingForm = ({
   bookingData: ServiceBookingFormProps;
 }) => {
   const { data: session } = useSession();
-
+const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -122,7 +123,7 @@ const EditServiceBookingForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log("Form submitted:", values);
     try {
-      const data = await updateDate(
+      const res = await updateDate(
         values as {
           serviceId: number;
           description: string;
@@ -132,9 +133,17 @@ const EditServiceBookingForm = ({
         },
         bookingData.id
       );
-      console.log(data, "the updates");
-      toast.success("Booking service updated successfuly");
-      form.reset();
+      //console.log(data, "the updates");
+      if(res.ok){
+
+        setIsLoading(true)
+        toast.success("Booking service updated successfuly");
+        form.reset();
+        setIsLoading(false);
+      }
+      throw new Error("Something Went Wrong");
+      setIsLoading(false);
+
 
       // Handle the success (e.g., display a success message, redirect, etc.)
     } catch (error) {
@@ -286,7 +295,8 @@ const EditServiceBookingForm = ({
 
             {/* Submit Button */}
             <Button type="submit" className="w-full">
-              {bookingData ? "Update Service" : "Book Service"}
+              {isLoading ? (<Loader className="animate animate-spin text-white" />) : (<p>Update Service</p>)}
+              {/* {bookingData ? "Update Service" : "Book Service"} */}
             </Button>
           </form>
         </Form>

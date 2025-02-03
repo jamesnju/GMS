@@ -1,13 +1,12 @@
 import { getUserById } from "@/actions/User";
 import EditUser from "@/Globalcomponents/admin/EditUser";
 import React from "react";
+export const dynamic = "force-dynamic"
 
-interface PageProps {
-  params: { id: number };
-}
 
-const Page = async ({ params }: PageProps) => {
-  const { id } =  params;
+
+const Page = async ({ params } : {params:Promise<{id:number}>}) => {
+  const { id } =  await params;
 
   const userData = await getUserById(id);
 

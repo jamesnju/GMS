@@ -21,7 +21,7 @@ interface User {
 //     return [e.message, 400];
 //   }
 // };
-export async function getUserById(id: number){
+export async function getUserById(id: number): Promise<User | null> {
   try {
     const res = await fetch(`${baseUrl}${id}/user`, {
       method: "GET",
@@ -31,8 +31,9 @@ export async function getUserById(id: number){
     });
 
     if (!res.ok) {
+      // If the user is not found, return null instead of throwing an error
       if (res.status === 404) {
-        throw new Error("User not found");
+        return null;
       }
       throw new Error(`Error fetching user data: ${res.statusText}`);
     }
@@ -41,9 +42,10 @@ export async function getUserById(id: number){
     return data;
   } catch (error) {
     console.error("Error fetching user data:", error);
+    // Return null in case of any error fetching the data
     return null;
   }
-};
+}
 
 export async function updateUser(id: number, data: User) {
   try {

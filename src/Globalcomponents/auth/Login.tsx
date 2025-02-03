@@ -23,25 +23,25 @@ export function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    const result = await signIn("credentials", {
+  
+    const res = await signIn("credentials", {
       redirect: false,
       email,
       password,
     });
-
-    console.log(result, "------");
-
+  
     setLoading(false);
-
-    if (result?.error) {
+  
+    if (!res || !res.ok) {
       toast.error("Invalid email or password. Please try again.");
       router.push("/auth");
-    } else {
-      toast.success("Login successful!");
-      router.push("/dashboard");
+      return;
     }
+  
+    toast.success("Login successful!");
+    router.push("/dashboard");
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-200">
