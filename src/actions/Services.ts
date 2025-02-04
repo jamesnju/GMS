@@ -20,7 +20,7 @@ export const getAllServices = async () => {
         });
     
         if(!res.ok){
-            throw new Error("Failed to fetch services");
+            console.log("Failed to fetch services");
         }
         const data = await res.json();
         return data.data;
@@ -41,7 +41,7 @@ export const getAllServicesCategory = async () => {
         });
     
         if(!res.ok){
-            throw new Error("Failed to fetch services");
+            console.log("Failed to fetch services");
         }
         const data = await res.json();
         return data.data;

@@ -35,7 +35,7 @@ export async function getUserById(id: number): Promise<User | null> {
       if (res.status === 404) {
         return null;
       }
-      throw new Error(`Error fetching user data: ${res.statusText}`);
+      console.log(`Error fetching user data: ${res.statusText}`);
     }
 
     const data: User = await res.json();
