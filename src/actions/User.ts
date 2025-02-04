@@ -6,6 +6,7 @@ interface User {
   name: string;
   email: string;
   password: string;
+  role: "Admin" | "customer" | "staff"; // Add role property
 }
 
 // // Function to fetch user data by ID
