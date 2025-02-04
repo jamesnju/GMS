@@ -16,12 +16,12 @@ import baseUrl from "@/utils/constant";
 import { toast } from "react-toastify";
 
 // This type is used to define the shape of our data.
-export type services = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-  createdAt: string;
+export type category = {
+  id: string
+  name: string
+  description: string
+  createdAt: string
+
 };
 
 const ConfirmDeleteModal = ({
@@ -49,9 +49,9 @@ const ConfirmDeleteModal = ({
   );
 };
 
-const ActionsCell = ({ row }: { row: { original: services } }) => {
+const ActionsCell = ({ row }: { row: { original: category } }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const service = row.original;
+  const category = row.original;
 
   const handleDelete = async (id: string) => {
     try {
@@ -101,13 +101,13 @@ const ActionsCell = ({ row }: { row: { original: services } }) => {
       <ConfirmDeleteModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onConfirm={() => handleDelete(service.id)}
+        onConfirm={() => handleDelete(category.id)}
       />
     </>
   );
 };
 
-export const columnCategory: ColumnDef<services>[] = [
+export const columnCategory: ColumnDef<category>[] = [
   {
     accessorKey: "id",
     header: "ID",

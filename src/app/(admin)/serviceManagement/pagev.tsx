@@ -11,8 +11,21 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { columnCategory } from "./columnCategory";
+interface Service {
+  id: string;
+  amount: number;
+  status: "pending" | "processing" | "success" | "failed";
+  email: string;
+  createdAt: string;
+}
+interface Category{
+  id: string
+  name: string
+  description: string
+  createdAt: string
 
-const PageView = ({ services, category }: { services: any; category: any }) => {
+}
+const PageView = ({ services, category }: { services: Service[]; category: Category[] }) => {
   const [activeTab, setActiveTab] = useState("services");
 
   return (
