@@ -26,6 +26,7 @@ export type Users = {
   email: string;
   name: string;
   createdAt: string;
+  role: "Admin" | "customer" | "staff"; // Add role property
 };
 
 // Confirmation Modal Component
