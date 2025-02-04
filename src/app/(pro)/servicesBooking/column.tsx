@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
+import baseUrl from "@/utils/constant";
+import { toast } from "react-toastify";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,10 +19,9 @@ import { seteditData, toggleEdit } from "@/store/slice/editSlice";
 import { useDispatch } from "react-redux";
 import Link from "next/link";
 import Modal from 'react-modal';
-import { deleteBookedService } from "@/actions/Services";
 
 // Define the type for the services data
-export type services = {
+export type Services = {
   id: number;
   name: string;
   description: string;
@@ -28,30 +30,51 @@ export type services = {
   status: string;
 };
 
-// Component to render action buttons for each row
-const ActionsCell = ({ row }: { row: { original: services } }) => {
+const ConfirmDeleteModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 className="text-lg font-semibold">Confirm Delete</h2>
+        <p className="text-gray-600">Are you sure you want to delete this appointment?</p>
+        <div className="mt-4 flex justify-end space-x-2">
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="destructive" onClick={onConfirm}>Delete</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ActionsCell = ({ row }: { row: { original: Services } }) => {
   const dispatch = useDispatch();
-  const services = row.original;
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const service = row.original;
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = () => setModalIsOpen(true);
-  const closeModal = () => setModalIsOpen(false);
-
-  const handleDelete = async () => {
+  const handleDelete = async (id: number) => {
     try {
-      const res = await deleteBookedService(services.id);
-        
-      // Handle successful deletion (e.g., refetch data, show success message)
-      console.log(res);
-      // alert(res);
-      
+      const res = await fetch(`${baseUrl}${id}/appointment`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        toast.success("Service deleted successfully");
+      } else {
+        toast.error("Failed to delete service");
+      }
     } catch (error) {
-      console.error("Failed to delete service", error);
-      alert("error")
-      // Handle error (e.g., show error message)
-    } finally {
-      closeModal();
+      console.error("Error deleting service:", error);
     }
+    setIsModalOpen(false);
   };
 
   return (
@@ -68,114 +91,92 @@ const ActionsCell = ({ row }: { row: { original: services } }) => {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
-              dispatch(seteditData({ ...services, id: Number(services.id) }));
+              dispatch(seteditData({ ...service, id: Number(service.id) }));
               dispatch(toggleEdit());
             }}
           >
-            <Link href={`/servicesBooking/${services.id}`}>Edit</Link>
+            <Link href={`/servicesBooking/${service.id}`}>Edit</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={openModal}>Delete</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsModalOpen(true)}>Delete</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Confirm Deletion"
-        ariaHideApp={false}
-        className="modal"
-        overlayClassName="modal-overlay"
-      >
-        <h2>Confirm Deletion</h2>
-        <p>Are you sure you want to delete this service?</p>
-        <div className="modal-actions">
-          <Button onClick={handleDelete}>Yes, Delete</Button>
-          <Button variant="ghost" onClick={closeModal}>
-            Cancel
-          </Button>
-        </div>
-      </Modal>
+      <ConfirmDeleteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => handleDelete(service.id)}
+      />
     </>
   );
 };
 
 // Define the columns for the table
-export const columns: ColumnDef<services>[] = [
+export const columns: ColumnDef<Services>[] = [
   {
     accessorKey: "id",
-    header: "id",
+    header: "ID",
   },
   {
-    accessorKey: "user.email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    accessorKey: "email",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Email
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
-    accessorKey: "name",  // Corrected accessorKey to match the data structure
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    accessorKey: "name",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
     accessorKey: "description",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Description
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Description
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
     accessorKey: "status",
-    header: "status",
-    cell: ({ row }) => {
-      return (
-        <div className="flex space-x-2">
-          <span className={`${row.original.status === "Pending" ? "text-orange-300" : row.original.status === "Canceled" ? "text-red-600" : row.original.status  === "Confirmed" ? "text-green-400" : "" } max-w-[500px] truncate font-medium`}>
-            {row.original?.status}
-          </span>
-        </div>
-      );
-    },
+    header: "Status",
+    cell: ({ row }) => (
+      <div className="flex space-x-2">
+        <span className={`${row.original.status === "Pending" ? "text-orange-300" : row.original.status === "Canceled" ? "text-red-600" : row.original.status === "Confirmed" ? "text-green-400" : ""} max-w-[500px] truncate font-medium`}>
+          {row.original?.status}
+        </span>
+      </div>
+    ),
   },
   {
     accessorKey: "createdAt",
-    header: "CreatedAt",
-    cell: ({ row }) => {
-      return (
-        <div className="flex space-x-2">
-          <span className="max-w-[500px] truncate font-medium">
-            {new Date(row.original?.createdAt).toLocaleDateString()}
-          </span>
-        </div>
-      );
-    },
+    header: "Created At",
+    cell: ({ row }) => (
+      <div className="flex space-x-2">
+        <span className="max-w-[500px] truncate font-medium">
+          {new Date(row.original?.createdAt).toLocaleDateString()}
+        </span>
+      </div>
+    ),
   },
   {
     id: "actions",
     header: "Actions",
-    cell: ActionsCell, // Use the ActionsCell component as a reference
+    cell: ({ row }) => <ActionsCell row={row} />,
   },
 ];

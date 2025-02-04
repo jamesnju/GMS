@@ -145,6 +145,83 @@ const ScheduleCell = ({ booking }: { booking: Booking }) => {
   );
 };
 
+const ConfirmDeleteModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 className="text-lg font-semibold">Confirm Delete</h2>
+        <p className="text-gray-600">Are you sure you want to delete this booking?</p>
+        <div className="mt-4 flex justify-end space-x-2">
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="destructive" onClick={onConfirm}>Delete</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ActionsCell = ({ booking }: { booking: Booking }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleDelete = async (id: number) => {
+    try {
+      const res = await axios.delete(`${baseUrl}${id}/appointment`);
+      if (res.status === 200) {
+        toast.success("Booking deleted successfully");
+        window.location.reload();
+      } else {
+        toast.error("Failed to delete booking");
+      }
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      toast.error("Failed to delete booking, try again");
+    }
+    setIsModalOpen(false);
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => {
+              // Assuming you have a method to start editing
+              // Here we would toggle an edit state or navigate to an edit page
+            }}
+          >
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsModalOpen(true)}>Delete</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <ConfirmDeleteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => handleDelete(booking.id)}
+      />
+    </>
+  );
+};
+
 export const columns: ColumnDef<Booking>[] = [
   {
     accessorKey: "service.price",
@@ -197,26 +274,6 @@ export const columns: ColumnDef<Booking>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(row.original.id.toString())}>
-              Copy booking ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View booking details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <ActionsCell booking={row.original} />,
   },
 ];

@@ -134,15 +134,17 @@ const [isLoading, setIsLoading] = useState(false);
         bookingData.id
       );
       //console.log(data, "the updates");
-      if(res.ok){
+      if(!res.ok){
 
         setIsLoading(true)
         toast.success("Booking service updated successfuly");
         form.reset();
         setIsLoading(false);
+      }else{
+
+        throw new Error("Something Went Wrong");
+        setIsLoading(false);
       }
-      throw new Error("Something Went Wrong");
-      setIsLoading(false);
 
 
       // Handle the success (e.g., display a success message, redirect, etc.)
@@ -295,8 +297,8 @@ const [isLoading, setIsLoading] = useState(false);
 
             {/* Submit Button */}
             <Button type="submit" className="w-full">
-              {isLoading ? (<Loader className="animate animate-spin text-white" />) : (<p>Update Service</p>)}
-              {/* {bookingData ? "Update Service" : "Book Service"} */}
+              {/* {isLoading ? (<Loader className="animate animate-spin text-white" />) : (<p>Update Service</p>)} */}
+              {bookingData ? "Update Service" : "Book Service"}
             </Button>
           </form>
         </Form>
