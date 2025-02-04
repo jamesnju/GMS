@@ -55,6 +55,8 @@ export const getAllServicesCategory = async () => {
 
 
 export const getBookedServices = async () => {
+  try{
+
     const res = await fetch(baseUrl + "bookings",{
         method:"GET",
         headers:{
@@ -67,7 +69,10 @@ export const getBookedServices = async () => {
     }
     const data = await res.json();
     return data.data;
-}
+} catch (error) {
+    console.error("Error fetching services:", error);
+    return [];
+  }}
 
 export const postBookService = async(Datavalues: { userId: number | undefined; serviceId: number; description: string; categoryId: number; bookedDate: Date })=>{
     const res = await fetch( baseUrl + "booking",{

@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import axios from "axios";
 import baseUrl from "@/utils/constant";
 import { toast } from "react-toastify";
 
@@ -56,8 +55,11 @@ const ActionsCell = ({ row }: { row: { original: services } }) => {
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await axios.delete(`${baseUrl}/service/${id}`);
-      if (res.status === 200) {
+      const res = await fetch(`${baseUrl}${id}/service`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
         toast.success("Service deleted successfully");
         window.location.reload();
       } else {
