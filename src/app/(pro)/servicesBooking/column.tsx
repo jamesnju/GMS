@@ -18,7 +18,6 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { seteditData, toggleEdit } from "@/store/slice/editSlice";
 import { useDispatch } from "react-redux";
 import Link from "next/link";
-import Modal from 'react-modal';
 
 // Define the type for the services data
 export type Services = {

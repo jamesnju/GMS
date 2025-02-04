@@ -1,8 +1,7 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from "react";
-import { CalendarIcon,Loader } from "lucide-react";
-
+import { CalendarIcon, Loader } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -96,7 +95,8 @@ const EditServiceBookingForm = ({
   bookingData: ServiceBookingFormProps;
 }) => {
   const { data: session } = useSession();
-const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -121,6 +121,7 @@ const [isLoading, setIsLoading] = useState(false);
   }, [bookingData, form, session]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     console.log("Form submitted:", values);
     try {
       const res = await updateDate(
@@ -133,27 +134,18 @@ const [isLoading, setIsLoading] = useState(false);
         },
         bookingData.id
       );
-      //console.log(data, "the updates");
-      if(!res.ok){
-
-        setIsLoading(true)
-        toast.success("Booking service updated successfuly");
+      if (res.ok) {
+        toast.success("Booking service updated successfully");
         form.reset();
-        setIsLoading(false);
-      }else{
-
-        throw new Error("Something Went Wrong");
-        setIsLoading(false);
+      } else {
+        throw new Error("Something went wrong");
       }
-
-
-      // Handle the success (e.g., display a success message, redirect, etc.)
     } catch (error) {
       toast.error("Failed to update booking");
       console.error("Failed to update booking:", error);
-      // Handle the error (e.g., display an error message)
+    } finally {
+      setIsLoading(false);
     }
-    form.reset();
   };
 
   return (
@@ -174,7 +166,6 @@ const [isLoading, setIsLoading] = useState(false);
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Service Dropdown */}
             <FormField
               control={form.control}
               name="serviceId"
@@ -204,7 +195,6 @@ const [isLoading, setIsLoading] = useState(false);
               )}
             />
 
-            {/* Service Description Field */}
             <FormField
               control={form.control}
               name="description"
@@ -222,7 +212,6 @@ const [isLoading, setIsLoading] = useState(false);
               )}
             />
 
-            {/* Service Category Dropdown */}
             <FormField
               control={form.control}
               name="categoryId"
@@ -252,7 +241,6 @@ const [isLoading, setIsLoading] = useState(false);
               )}
             />
 
-            {/* Appointment Date */}
             <FormField
               control={form.control}
               name="bookedDate"
@@ -295,10 +283,12 @@ const [isLoading, setIsLoading] = useState(false);
               )}
             />
 
-            {/* Submit Button */}
             <Button type="submit" className="w-full">
-              {/* {isLoading ? (<Loader className="animate animate-spin text-white" />) : (<p>Update Service</p>)} */}
-              {bookingData ? "Update Service" : "Book Service"}
+              {isLoading ? (
+                <Loader className="animate-spin text-white mx-auto" />
+              ) : (
+                bookingData ? "Update Service" : "Book Service"
+              )}
             </Button>
           </form>
         </Form>
