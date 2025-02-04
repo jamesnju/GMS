@@ -23,8 +23,9 @@ interface User {
   name: string;
   email: string;
   password: string; // Password might be optional on the frontend
-  // ... other properties of your user object
+  role: "Admin" | "customer" | "staff"; // Add role property
 }
+
 // Define the validation schema
 const formSchema = z.object({
   name: z.string().nonempty("Name is required"),
@@ -33,9 +34,10 @@ const formSchema = z.object({
     .email("Invalid email address")
     .nonempty("Email is required"),
   password: z.string().nonempty("Password is required"),
+  role: z.enum(["Admin", "customer", "staff"], {
+    errorMap: () => ({ message: "Role is required" }),
+  }),
 });
-
-
 
 // Infer the form data type from the schema
 type FormData = z.infer<typeof formSchema>;
@@ -46,39 +48,41 @@ const EditUser = ({ userData }: { userData: User }) => {
     register,
     handleSubmit,
     formState: { errors },
-    reset, // Add reset function
+    reset,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: { // Make sure default values match FormData
+    defaultValues: {
       name: userData.name,
       email: userData.email,
-      password: userData.password , // provide default for password
+      password: userData.password,
+      role: userData.role, // Set default role
     },
   });
 
   const onSubmit = async (data: FormData) => {
-    setIsLoading(true); // Set loading *before* the API call
+    setIsLoading(true);
     try {
-      const updatedData: User = { // Type the updatedData
+      const updatedData: User = {
         id: userData.id,
-        name: data.name, // No need for || if defaultValues are set correctly
+        name: data.name,
         email: data.email,
-        password: data.password ?? "", // Ensure password is always a string
+        password: data.password ?? "",
+        role: data.role, // Update role
       };
 
       const res = await updateUser(userData.id, updatedData);
       if (!res.ok) {
         toast.success("User updated successfully");
-        reset(); // Reset the form after successful update
+        reset();
+        window.location.reload();
       } else {
-        //const errorData = await res.json(); // Get error details from the backend
-        toast.error(`Failed to update user`); // Display error message from the backend
+        toast.error("Failed to update user");
       }
     } catch (error) {
       toast.error("Something went wrong");
       console.error("Failed to update user:", error);
     } finally {
-      setIsLoading(false); // Always set loading to false, even if there's an error
+      setIsLoading(false);
     }
   };
 
@@ -113,8 +117,18 @@ const EditUser = ({ userData }: { userData: User }) => {
               <p className="text-red-500">{String(errors.email.message)}</p>
             )}
           </div>
-
-          <div className="space-y-2">
+          <div className="space-y-2 grid">
+            <Label htmlFor="user-role" className="">Role</Label>
+            <select id="user-role" {...register("role")} className="input w-full rounded-md text-base p-4">
+              <option value="Admin">Admin</option>
+              <option value="customer">Customer</option>
+              <option value="staff">Staff</option>
+            </select>
+            {errors.role && (
+              <p className="text-red-500">{String(errors.role.message)}</p>
+            )}
+          </div>
+          {/* <div className="space-y-2">
             <Label htmlFor="user-password">Password</Label>
             <Input
               id="user-password"
@@ -126,7 +140,9 @@ const EditUser = ({ userData }: { userData: User }) => {
             {errors.password && (
               <p className="text-red-500">{String(errors.password.message)}</p>
             )}
-          </div>
+          </div> */}
+
+         
 
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
