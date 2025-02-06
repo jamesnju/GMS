@@ -3,11 +3,13 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-eb-garamond);
 }
 
 @layer base {
   :root {
+    --font-eb-garamond: "EB Garamond", serif;
+    --font-roboto-mono: "Roboto Mono", monospace;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -77,7 +79,9 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
-
+.mono-text {
+  font-family: var(--font-roboto-mono);
+}
 @layer base {
   * {
     @apply border-border;

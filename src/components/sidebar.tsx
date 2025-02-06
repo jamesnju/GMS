@@ -41,7 +41,7 @@ export function AppSidebar() {
   const {data: session} = useSession();
 
   return (
-    <Sidebar className={cn("border-r-0 bg-[#65a30d]", !open && "hidden md:block")}>
+    <Sidebar className={cn("border-r-0 bg-Background ", !open && "hidden md:block")}>
       <SidebarHeader className="bg-[#65a30d] py-4">
         <h2 className="text-2xl font-bold text-Text text-center">Mechanic App</h2>
       </SidebarHeader>
