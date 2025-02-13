@@ -11,6 +11,7 @@ import Signup from "./Signup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "react-toastify";
 import { Wrench, Key } from "lucide-react";
+import Link from "next/link";
 
 export function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -61,17 +62,26 @@ export function Login() {
               <TabsTrigger
                 value="login"
                 onClick={() => setIsLogin(true)}
-                className="text-lg font-semibold"
+                className="text-sm font-semibold"
               >
                 Login
               </TabsTrigger>
               <TabsTrigger
                 value="signup"
                 onClick={() => setIsLogin(false)}
-                className="text-lg font-semibold"
+                className="text-sm font-semibold"
               >
                 Sign Up
               </TabsTrigger>
+              <Link href={"/"}>
+              <TabsTrigger
+                value="signup"
+                onClick={() => setIsLogin(false)}
+                className="text-sm font-semibold"
+              >
+                Back Home
+              </TabsTrigger>
+              </Link>
             </TabsList>
             <TabsContent value="login">
               <form className="space-y-4" onSubmit={handleLogin}>

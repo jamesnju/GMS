@@ -3,7 +3,7 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
+  
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -17,6 +17,8 @@ import { postServiceCategory } from "@/actions/Services";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 import { toast } from "react-toastify";
+import Link from "next/link";
+
 
 // Define the validation schema
 const formSchema = z.object({
@@ -62,6 +64,7 @@ export default function AddServiceCategory() {
       const res = await postServiceCategory(serviceData);
       if (!res.ok) {
         toast.success("Service added successfully");
+        window.location.reload();
       } else {
         toast.error("Error submitting service");
       }
@@ -76,6 +79,9 @@ export default function AddServiceCategory() {
   return (
     <Card className="w-full mx-auto">
       <CardHeader>
+      <Link href="/serviceManagement">
+          <Button>Back</Button>
+        </Link>
         <CardTitle className="text-Text">Add a Service</CardTitle>
         <CardDescription>
           Provide the details of the service you want to add.
@@ -115,7 +121,6 @@ export default function AddServiceCategory() {
           </Button>
         </form>
       </CardContent>
-      <CardFooter>{/* Additional footer content */}</CardFooter>
     </Card>
   );
 }

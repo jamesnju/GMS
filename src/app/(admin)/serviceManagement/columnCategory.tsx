@@ -14,6 +14,7 @@ import {
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import baseUrl from "@/utils/constant";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 // This type is used to define the shape of our data.
 export type category = {
@@ -58,10 +59,9 @@ const ActionsCell = ({ row }: { row: { original: category } }) => {
       const res = await fetch(`${baseUrl}${id}/serviceCategory`, {
         method: 'DELETE',
       });
-
       if (res.ok) {
         toast.success("Service Category deleted successfully");
-        //window.location.reload();
+        window.location.reload();
       } else {
         toast.error("Failed to delete service category");
       }
@@ -92,7 +92,9 @@ const ActionsCell = ({ row }: { row: { original: category } }) => {
               // router.push(`/services/edit/${service.id}`);
             }}
           >
-            Edit
+            <Link href={`/serviceManagement/${category.id}`}>
+              Edit
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsModalOpen(true)}>Delete</DropdownMenuItem>
         </DropdownMenuContent>

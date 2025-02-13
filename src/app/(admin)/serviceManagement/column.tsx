@@ -14,6 +14,7 @@ import {
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import baseUrl from "@/utils/constant";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 // This type is used to define the shape of our data.
 export type services = {
@@ -92,7 +93,11 @@ const ActionsCell = ({ row }: { row: { original: services } }) => {
               // router.push(`/services/edit/${service.id}`);
             }}
           >
+            
+            <Link href={`/serviceManagement/${service.id}`}>
+
             Edit
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsModalOpen(true)}>Delete</DropdownMenuItem>
         </DropdownMenuContent>

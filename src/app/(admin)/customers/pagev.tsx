@@ -19,9 +19,7 @@ interface PageViewProps {
 }
 
 const PageView: React.FC<PageViewProps> = ({ Users }) => {
-  // const editdata = useSelector((state: RootState) => state.edit.editData)
-  const filteredUsers = Users.filter((user) => user.role === "staff");
-  
+  const filteredUsers = Users.filter((user) => user.role === "customer");
 
   return (
     <Card className=" h-screen w-full">

@@ -24,7 +24,7 @@ export const options: NextAuthOptions = {
       authorize: async (credentials) => {
         try {
           // Log credentials to ensure they are passed correctly
-          console.log("Received credentials:", credentials);
+          //console.log("Received credentials:", credentials);
 
           // Call the loginUser function to authenticate the user
           const res = await loginUser({
@@ -37,6 +37,7 @@ export const options: NextAuthOptions = {
 
           if (res?.user && res?.token) {
             // Return necessary user details for NextAuth JWT token
+            console.log(res, "user")
             const { id, email, role, name } = res.user;
             return { id, email, role, name };
           }

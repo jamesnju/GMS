@@ -27,10 +27,10 @@ const menuItems = [
   { name: 'My Appointments', icon: ClipboardList, href: '/appointment' },
   { name: 'Payment', icon: CreditCard, href: '/managepayment' },
   { name: 'Service Management', icon: Settings, href: '/serviceManagement' },
-  { name: 'Customer Management', icon: Users, href: '/' },
+  { name: 'Customer Management', icon: Users, href: '/customers' },
   { name: 'Payment Management', icon: CreditCard, href: '/' },
-  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/' },
-  { name: 'User Management', icon: Wrench, href: '/users' },
+  // { name: 'Mechanic/Staff Management', icon: Wrench, href: '/' },
+  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/users' },
   { name: 'Inventory Management', icon: Package, href: '/inventoryManagement' },
   {name: 'Generate Report', icon: File, href:'/report'},
 ]
@@ -59,7 +59,7 @@ export function AppSidebar() {
               >
                 <Link href={item.href}>
                   <item.icon className="mr-2 h-4 w-4 text-black" />
-                  <span className='text-Text'>{item.name}</span>
+                  <span className='text-white'>{item.name}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

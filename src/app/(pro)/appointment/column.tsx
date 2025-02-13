@@ -172,6 +172,7 @@ const ConfirmDeleteModal = ({
 
 const ActionsCell = ({ booking }: { booking: Booking }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  //const service = row.original;
 
   const handleDelete = async (id: number) => {
     try {
@@ -201,14 +202,16 @@ const ActionsCell = ({ booking }: { booking: Booking }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             onClick={() => {
               // Assuming you have a method to start editing
               // Here we would toggle an edit state or navigate to an edit page
             }}
           >
+            <Link href={`/appointment/${booking.id}`}>            
             Edit
-          </DropdownMenuItem>
+            </Link>
+          </DropdownMenuItem> */}
           <DropdownMenuItem onClick={() => setIsModalOpen(true)}>Delete</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

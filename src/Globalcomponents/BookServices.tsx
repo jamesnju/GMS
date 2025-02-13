@@ -111,7 +111,7 @@ const ServiceBookingForm = ({
   };
 
   return (
-    <Card className="mx-auto bg-red-300 h-screen">
+    <Card className="mx-auto h-screen">
       <CardHeader className="flex justify-end items-end w-full">
         <Link href="/servicesBooking">
           <Button className="w-12">Back</Button>

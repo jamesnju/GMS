@@ -134,9 +134,9 @@ const EditServiceBookingForm = ({
         },
         bookingData.id
       );
-      if (res.ok) {
+      if (!res.ok) {
         toast.success("Booking service updated successfully");
-        form.reset();
+        window.location.reload();
       } else {
         throw new Error("Something went wrong");
       }
@@ -149,7 +149,7 @@ const EditServiceBookingForm = ({
   };
 
   return (
-    <Card className="mx-auto bg-red-300 h-screen">
+    <Card className="mx-auto h-screen">
       <CardHeader>
         <Link href="/servicesBooking">
           <Button>Back</Button>

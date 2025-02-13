@@ -2,6 +2,7 @@
 
 import { Service } from "@/Globalcomponents/admin/manageSerives/AddService";
 import { ServiceCategory } from "@/Globalcomponents/admin/manageSerives/AddServiceCategory";
+import { Booking } from "@/Globalcomponents/admin/manageSerives/EditService";
 import baseUrl from "@/utils/constant"
 
 // interface Datavalues {
@@ -97,12 +98,12 @@ export const getBookingById = async (id: number): Promise< null>=>{
         },
 
     })
-    console.log(res, "data id")
+    //console.log(res, "data id")
     if(!res.ok){
         throw new Error("something went wrong");
     }
     const data = await res.json();
-    console.log(data, "data received from API"); // Log the entire data object
+    //console.log(data, "data received from API"); // Log the entire data object
 
     return data?.data;
 }
@@ -185,3 +186,91 @@ export const updateDate = async (
     return await res.json();
   }
   
+export async function getServiceById(id: number){
+  try {
+    const res = await fetch(baseUrl + `${id}/service`,{
+      method:"GET",
+      headers:{
+        "Content-Type": "application/json"
+      }
+    })
+    const data = await res.json()
+    return data?.data;
+  } catch (error) {
+    console.error("Something error", error);
+  }
+}
+
+
+
+
+  export async function updateService(serviceData: Booking, id: number){
+    try {
+      //console.log(serviceData, "serviceData");
+      
+      const res = await fetch(baseUrl + `${id}/service`,{
+        method:"PATCH",
+        headers:{
+          "Content-Type": "application/json"
+        },
+        body:JSON.stringify(serviceData)
+      })
+      if(res.ok){
+        const data = await res.json();
+        return data;      }
+      throw new Error("Failed to update service");
+      
+    } catch (error) {
+      console.log(error, "sothing went wrong")
+    }
+  }
+
+  
+  export async function updateServiceCategory(data:ServiceCategory,id: number){
+    try {
+      const response = await fetch(`${baseUrl}${id}/serviceCategory`, { 
+        method: 'PATCH',
+        headers:{
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+       })
+       
+    console.log("Raw Response:", response);
+
+    if (!response) {
+      throw new Error("No response received from the server.");
+    }
+
+    if (!response.ok) {
+      console.error("Failed response:", response.status, response.statusText);
+      throw new Error("Failed to update service category");
+    }
+
+    const result = await response.json();
+    console.log("Update successful:", result);
+    return result;
+    } catch (error) {
+      console.error("Failed to update service category",error);
+    }
+    
+  }
+  export async function getCategoryServiceById(id: number){
+    try {
+      const res = await fetch(baseUrl + `${id}/serviceCategory`,{ 
+        method:"GET",
+        headers:{
+          "Content-Type": "application/json"
+        }
+        
+      })
+      if(!res.ok){
+        throw new Error("Failed to fetch services");
+      }
+      const data = await res.json();
+      return data?.data;
+    } catch (error) {
+      console.log(error, "sothing went wrong")
+
+    }
+  }

@@ -7,7 +7,6 @@ export const dynamic = "force-dynamic"
 const page = async() => {
     const services = await getAllServices() || [];
     const category = await getAllServicesCategory() || [];
-    console.log(category, "category")
   if(!services){
     return <div> No Data </div>
   }

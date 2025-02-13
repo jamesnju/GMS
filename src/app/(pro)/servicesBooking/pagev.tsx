@@ -21,7 +21,6 @@ const PageView = async () => {
 
   return (
     <Card>
-      {/* <div className='overflow-hidden mx-28 rounded-md shadow-lg '> */}
       <CardHeader>
         <CardTitle className="text-Text">Manage booking</CardTitle>
         <CardDescription className="texxt-Text">
@@ -35,9 +34,9 @@ const PageView = async () => {
           </Button>
         </Link>
       </div>
+
       <DataTable columns={columns} data={services} />
 
-      {/* </div> */}
     </Card>
   );
 };

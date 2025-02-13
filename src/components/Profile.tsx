@@ -168,7 +168,7 @@ export function Profile() {
           <TabsList>
             <TabsTrigger value="personal">Personal Information</TabsTrigger>
             <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
-            <TabsTrigger value="password">Password</TabsTrigger>
+            {/* <TabsTrigger value="password">Password</TabsTrigger> */}
           </TabsList>
           <TabsContent value="personal">
             {/* profile infor */}

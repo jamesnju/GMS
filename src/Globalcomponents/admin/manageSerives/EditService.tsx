@@ -1,20 +1,18 @@
-'use client'
+"use client";
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { postService } from "@/actions/Services";
-import { useState } from "react";
+import { updateService } from "@/actions/Services";
 import { Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import Link from "next/link";
-
-
 // Define the validation schema
 const formSchema = z.object({
   name: z.string().nonempty("Name is required"),
@@ -26,16 +24,50 @@ const formSchema = z.object({
 });
 
 // Define TypeScript interfaces
-export interface Service {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  categoryId: number;
-  createdAt: string;
-  updatedAt: string;
-}
+// export interface Booking {
+//   id: number;
+//   userId: number;
+//   serviceId: number;
+//   categoryId: number;
+//   description: string;
+//   bookedDate: string;
+//   status: string;
+//   createdAt: string;
+//   updatedAt: string;
+//   service: {
+//     id: number;
+//     name: string;
+//     description: string;
+//     price: number;
+//     categoryId: number;
+//     createdAt: string;
+//     updatedAt: string;
+//   };
+//   category: {
+//     id: number;
+//     name: string;
+//     description: string;
+//     createdAt: string;
+//   };
+//   user: {
+//     id: number;
+//     name: string;
+//     email: string;
+//     password: string;
+//     role: string;
+//     createdAt: string;
+//   };
+// }
+export interface Booking{
 
+  id: number;
+      name: string;
+      description: string;
+      price: number;
+      categoryId: number;
+      // createdAt: string;
+      // updatedAt: string;
+}
 export interface Category {
   id: number;
   name: string;
@@ -43,49 +75,57 @@ export interface Category {
   createdAt: string;
 }
 
-
-
 // Define the type for the form data based on the schema
 type FormData = z.infer<typeof formSchema>;
 
-export default function AddService({ serviceCategories }: { serviceCategories: Category[]; }) {
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
+export default function EditService({ booking, categories }: { booking: Booking; categories: Category[] }) {
+  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: booking?.name,
+      description: booking?.description,
+      price: String(booking?.price),
+      categoryId: String(booking?.categoryId),
+    },
   });
-  const [isLoading, setIsLoading] = useState(false)
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Reset form with service data when component mounts
+    reset({
+      name: booking?.name,
+      description: booking?.description,
+      price: String(booking?.price),
+      categoryId: String(booking?.categoryId),
+    });
+  }, [booking, reset]);
 
   const onSubmit = async (data: FormData) => {
     // Map the form data to the Service type
-    const serviceData: Service = {
-      id: 0, // Assuming you're generating the id server-side or after the response
-      name: data.name,
+    const serviceData = {
+      id: booking?.id,
+      name: data?.name,
       description: data.description,
       price: parseFloat(data.price), // Convert price from string to number
       categoryId: parseInt(data.categoryId, 10), // Convert categoryId to number
-      createdAt: new Date().toISOString(), // Set the createdAt timestamp
-      updatedAt: new Date().toISOString(), // Set the updatedAt timestamp
+     
     };
 
     try {
-      const res = await postService(serviceData);
-      if(!res.ok){
-        setIsLoading(true)
-        toast.success("Service added successfully")
+      setIsLoading(true);
+      const res = await updateService(serviceData, booking.id);
+      if (!res.ok) {
+        toast.success("Service updated successfully");
         window.location.reload();
-        
-        //console.log("Service submitted:", res);
-        setIsLoading(false)
-      }else{
-        setIsLoading(true)
-
-        toast.error("Error submitting service");
-        setIsLoading(false)
-
+      } else {
+        toast.error("Error updating service");
       }
     } catch (error) {
-      toast.error("Error submitting service");
-
-      console.error("Error submitting service:", error);
+      toast.error("Error updating service");
+      console.error("Error updating service:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -93,12 +133,10 @@ export default function AddService({ serviceCategories }: { serviceCategories: C
     <Card className="w-full mx-auto">
       <CardHeader>
       <Link href="/serviceManagement">
-          <Button className="flex-end  font-bold  text white px-6 py-3 rounded-md  text-white">
-            back to service
-          </Button>
+          <Button>Back</Button>
         </Link>
-        <CardTitle className="text-Text">Add a Service</CardTitle>
-        <CardDescription>Provide the details of the service you want to add.</CardDescription>
+        <CardTitle className="text-Text">Edit Service</CardTitle>
+        <CardDescription>Update the details of the service.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -122,13 +160,13 @@ export default function AddService({ serviceCategories }: { serviceCategories: C
 
           <div className="space-y-2">
             <Label htmlFor="service-category">Category</Label>
-            <Select onValueChange={(value) => setValue("categoryId", value)} defaultValue="">
+            <Select onValueChange={(value) => setValue("categoryId", value)} defaultValue={String(booking?.categoryId)}>
               <SelectTrigger id="service-category">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                {serviceCategories && serviceCategories.length > 0 ? (
-                  serviceCategories.map((item) => (
+                {categories && categories.length > 0 ? (
+                  categories.map((item) => (
                     <SelectItem key={item.id} value={String(item.id)}>
                       {item.name}
                     </SelectItem>
@@ -145,12 +183,11 @@ export default function AddService({ serviceCategories }: { serviceCategories: C
             {isLoading ? (
               <Loader className="animate animate-spin text-white" />
             ) : (
-              <p>Add Service</p>
+              <p>Update Service</p>
             )}
           </Button>
         </form>
       </CardContent>
-      <CardFooter>{/* Additional footer content */}</CardFooter>
     </Card>
   );
 }

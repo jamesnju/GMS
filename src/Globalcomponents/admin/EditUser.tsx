@@ -55,7 +55,7 @@ const EditUser = ({ userData }: { userData: User }) => {
       name: userData.name,
       email: userData.email,
       password: userData.password,
-      role: userData.role, // Set default role
+      role: userData.role, 
     },
   });
 

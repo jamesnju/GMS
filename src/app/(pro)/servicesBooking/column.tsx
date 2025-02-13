@@ -67,6 +67,7 @@ const ActionsCell = ({ row }: { row: { original: Services } }) => {
 
       if (res.ok) {
         toast.success("Service deleted successfully");
+        window.location.reload();
       } else {
         toast.error("Failed to delete service");
       }
