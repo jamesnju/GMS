@@ -63,7 +63,6 @@ export const getBookedServices = async () => {
         headers:{
             "Content-Type": "application/json",
         }
-        
     })
     if(!res.ok){
         throw new Error("Failed to fetch services");

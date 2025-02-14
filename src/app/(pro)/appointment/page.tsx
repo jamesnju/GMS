@@ -11,8 +11,7 @@ export const dynamic = "force-dynamic"
 
 const PageView = async() => {
   const BookingsResponse = await getBookedServices() || [];
-//   const editdata = useSelector((state: RootState) => state.property.editdata)
-//console.log(BookingsResponse, "BookingsResponse======================");
+console.log(BookingsResponse, "ress")
 if(!BookingsResponse){
   return <div> No Data </div>
 }

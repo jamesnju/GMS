@@ -82,9 +82,9 @@ export default function AddServiceCategory() {
       <Link href="/serviceManagement">
           <Button>Back</Button>
         </Link>
-        <CardTitle className="text-Text">Add a Service</CardTitle>
+        <CardTitle className="text-Text">Add  Service Category</CardTitle>
         <CardDescription>
-          Provide the details of the service you want to add.
+          Provide details of the service category you want to add.
         </CardDescription>
       </CardHeader>
       <CardContent>

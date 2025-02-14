@@ -117,7 +117,7 @@ export const columns: ColumnDef<Services>[] = [
     header: "ID",
   },
   {
-    accessorKey: "email",
+    accessorKey: "user.email",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -129,7 +129,7 @@ export const columns: ColumnDef<Services>[] = [
     ),
   },
   {
-    accessorKey: "name",
+    accessorKey: "user.name",
     header: ({ column }) => (
       <Button
         variant="ghost"

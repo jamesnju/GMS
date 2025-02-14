@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Calendar, CreditCard, LayoutDashboard, Settings, Users, Wrench, Package, ClipboardList, Mail, LogOut, File } from 'lucide-react'
+import { Calendar, CreditCard, LayoutDashboard, Settings, Users, Wrench, ClipboardList, Mail, LogOut, File } from 'lucide-react'
 
 import { cn } from "@/lib/utils"
 import {
@@ -14,7 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
-  // SidebarProvider,
   useSidebar,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -22,32 +21,34 @@ import { Button } from "@/components/ui/button"
 import { signOut, useSession } from 'next-auth/react'
 
 const menuItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-  { name: 'Service Booking', icon: Calendar, href: '/servicesBooking' },
-  { name: 'My Appointments', icon: ClipboardList, href: '/appointment' },
-  { name: 'Payment', icon: CreditCard, href: '/managepayment' },
-  { name: 'Service Management', icon: Settings, href: '/serviceManagement' },
-  { name: 'Customer Management', icon: Users, href: '/customers' },
-  { name: 'Payment Management', icon: CreditCard, href: '/' },
-  // { name: 'Mechanic/Staff Management', icon: Wrench, href: '/' },
-  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/users' },
-  { name: 'Inventory Management', icon: Package, href: '/inventoryManagement' },
-  {name: 'Generate Report', icon: File, href:'/report'},
+  { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', roles: ['Admin', 'customer'] },
+  { name: 'Service Booking', icon: Calendar, href: '/servicesBooking', roles: ['Admin', 'customer'] },
+  { name: 'My Appointments', icon: ClipboardList, href: '/appointment', roles: ['Admin', 'customer'] },
+  { name: 'Payment', icon: CreditCard, href: '/payment', roles: ['Admin', 'customer'] },
+  { name: 'Service Management', icon: Settings, href: '/serviceManagement', roles: ['Admin'] },
+  { name: 'Customer Management', icon: Users, href: '/customers', roles: ['Admin'] },
+  { name: 'Payment Management', icon: CreditCard, href: '/', roles: ['Admin'] },
+  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/users', roles: ['Admin'] },
+  { name: 'Generate Report', icon: File, href: '/report', roles: ['Admin'] },
 ]
 
 export function AppSidebar() {
   const pathname = usePathname()
   const { open } = useSidebar()
-  const {data: session} = useSession();
+  const { data: session } = useSession()
+  const userRole = session?.user?.role || '' // Assuming the role is available in the session
+
+  // Filter menu items based on user role
+  const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole))
 
   return (
-    <Sidebar className={cn("border-r-0 bg-Background ", !open && "hidden md:block")}>
+    <Sidebar className={cn("border-r-0 bg-Background md:bg-Background", !open && "hidden md:block")}>
       <SidebarHeader className="bg-[#65a30d] py-4">
         <h2 className="text-2xl font-bold text-Text text-center">Mechanic App</h2>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          {menuItems.map((item) => (
+          {filteredMenuItems.map((item) => (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton 
                 asChild 
@@ -59,7 +60,7 @@ export function AppSidebar() {
               >
                 <Link href={item.href}>
                   <item.icon className="mr-2 h-4 w-4 text-black" />
-                  <span className='text-white'>{item.name}</span>
+                  <span className='text-Text'>{item.name}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -80,10 +81,7 @@ export function AppSidebar() {
             </p>
           </div>
         </div>
-        <Button variant="outline" className="w-full text-Text border-white hover:bg-[#4d7c0f]  
-        "
-        onClick={()=> signOut()}
-        >
+        <Button variant="outline" className="w-full text-Text border-white hover:bg-[#4d7c0f]" onClick={() => signOut({ callbackUrl: "/auth" })}>
           <LogOut className="mr-2 h-4 w-4" />
           Logout
         </Button>
@@ -91,4 +89,3 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
-

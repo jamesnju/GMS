@@ -1,22 +1,35 @@
-import { Payment } from "@/components/Payment"
+import React from "react";
+import { columns } from "./column";
+import { DataTable } from "@/shacdn/data-table";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getBookedServices } from "@/actions/Services";
+export const dynamic = "force-dynamic";
 
-export default function PaymentPage() {
-  // In a real application, you would fetch this data from your backend
-  const mockInvoiceData = {
-    items: [
-      { description: "Service Fee", amount: 100 },
-      { description: "Tax", amount: 10 },
-    ],
-    total: 110,
-  };
+const PageView = async () => {
+  const BookingsResponse = (await getBookedServices()) || [];
 
-  // In a real application, you would generate this on the server
-  const mockClientSecret = "mock_client_secret";
+  if (!BookingsResponse) {
+    return <div> No Data </div>;
+  }
 
   return (
-    <div className="container mx-auto py-10">
-      <Payment clientSecret={mockClientSecret} invoiceData={mockInvoiceData} />
-    </div>
-  );
-}
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-Text">Manage Appointments</CardTitle>
+        <CardDescription className="texxt-Text">
+          manage Appointments by updating, canceling and viewing history of
+          Appointments.
+        </CardDescription>
+      </CardHeader>
 
+      <DataTable columns={columns} data={BookingsResponse} />
+    </Card>
+  );
+};
+
+export default PageView;

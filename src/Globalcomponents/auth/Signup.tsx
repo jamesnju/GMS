@@ -77,7 +77,7 @@ const Signup = () => {
           id="userPassword"
           type="password"
           {...register("password")}
-          placeholder="xxxxxxxxxxxxxxxx"
+          placeholder="Enter your password"
         />
         {errors.password && <p className="text-red-500">{errors.password.message}</p>}
       </div>
