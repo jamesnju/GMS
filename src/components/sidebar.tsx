@@ -28,7 +28,7 @@ const menuItems = [
   { name: 'Service Management', icon: Settings, href: '/serviceManagement', roles: ['Admin'] },
   { name: 'Customer Management', icon: Users, href: '/customers', roles: ['Admin'] },
   { name: 'Payment Management', icon: CreditCard, href: '/', roles: ['Admin'] },
-  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/users', roles: ['customer'] },
+  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/users', roles: ['Admin'] },
   { name: 'Generate Report', icon: File, href: '/report', roles: ['Admin'] },
 ]
 
