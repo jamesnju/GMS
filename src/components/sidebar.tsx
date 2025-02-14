@@ -23,12 +23,12 @@ import { signOut, useSession } from 'next-auth/react'
 const menuItems = [
   { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', roles: ['Admin', 'customer'] },
   { name: 'Service Booking', icon: Calendar, href: '/servicesBooking', roles: ['Admin', 'customer'] },
-  { name: 'My Appointments', icon: ClipboardList, href: '/appointment', roles: ['Admin', 'customer'] },
+  { name: 'Appointments', icon: ClipboardList, href: '/appointment', roles: ['Admin', 'customer'] },
   { name: 'Payment', icon: CreditCard, href: '/payment', roles: ['Admin', 'customer'] },
   { name: 'Service Management', icon: Settings, href: '/serviceManagement', roles: ['Admin'] },
   { name: 'Customer Management', icon: Users, href: '/customers', roles: ['Admin'] },
   { name: 'Payment Management', icon: CreditCard, href: '/', roles: ['Admin'] },
-  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/users', roles: ['Admin'] },
+  { name: 'Mechanic/Staff Management', icon: Wrench, href: '/users', roles: ['customer'] },
   { name: 'Generate Report', icon: File, href: '/report', roles: ['Admin'] },
 ]
 
