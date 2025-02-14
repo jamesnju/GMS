@@ -42,7 +42,7 @@ export function AppSidebar() {
   const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole))
 
   return (
-    <Sidebar className={cn("border-r-0 bg-Background md:bg-Background", !open && "hidden md:block")}>
+    <Sidebar className={cn("border-r-0 bg-Background md:bg-Background sm:bg-Background", !open && "hidden md:block bg-Background")}>
       <SidebarHeader className="bg-[#65a30d] py-4">
         <h2 className="text-2xl font-bold text-Text text-center">Mechanic App</h2>
       </SidebarHeader>
