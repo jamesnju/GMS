@@ -19,7 +19,10 @@ export default function RootLayout({
   <SidebarProvider defaultOpen={true}>
     <div className="flex bg-white h-screen w-screen">
       {/* Set the sidebar z-index lower than the navbar */}
-      <AppSidebar className="z-10" />
+      <div className="z-10">
+
+      <AppSidebar  />
+      </div>
       
       <div className="flex-1 flex flex-col w-full">
         <Navbar />
