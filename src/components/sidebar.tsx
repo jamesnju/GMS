@@ -46,7 +46,7 @@ export function AppSidebar() {
       <SidebarHeader className="bg-[#65a30d] py-4">
         <h2 className="text-2xl font-bold text-Text text-center">Mechanic App</h2>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-Background">
         <SidebarMenu>
           {filteredMenuItems.map((item) => (
             <SidebarMenuItem key={item.name}>

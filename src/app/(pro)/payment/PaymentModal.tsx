@@ -115,70 +115,72 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, booking })
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Payment for {booking.service.name}</DialogTitle>
-          <DialogDescription>Please select your payment method and confirm the details.</DialogDescription>
-        </DialogHeader>
-        {step === 1 && (
-          <RadioGroup onValueChange={(value) => handlePaymentMethodChange(value as "stripe" | "mpesa")}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="stripe" id="stripe" />
-              <Label htmlFor="stripe">Pay with Stripe</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="mpesa" id="mpesa" />
-              <Label htmlFor="mpesa">Pay with M-Pesa</Label>
-            </div>
-          </RadioGroup>
-        )}
-        {step === 2 && (
-          <div className="py-4">
-            <p>
-              <strong>Service:</strong> {booking.service.name}
-            </p>
-            <p>
-              <strong>Price:</strong>{" "}
-              {new Intl.NumberFormat("en-US", { style: "currency", currency: "KSH" }).format(booking.service.price)}
-            </p>
-            <p>
-              <strong>Name:</strong> {booking.user.name}
-            </p>
-            <p>
-              <strong>Email:</strong> {booking.user.email}
-            </p>
-            <p>4242 4242 4242 4242, z-5numbers, cv-3no</p>
-            {paymentMethod === "stripe" && (
-              <div className="mt-4">
-                <CardElement />
-              </div>
-            )}
-            {paymentMethod === "mpesa" && (
-              <div className="mt-4">
-                <Label htmlFor="phoneNumber">M-Pesa Phone Number</Label>
-                <Input
-                  id="phoneNumber"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="M-Pesa phone number format 2700747076"
-                />
-              </div>
-            )}
+  <DialogContent className="max-w-lg w-full sm:max-w-md sm:px-4 sm:py-6 p-6">
+    <DialogHeader>
+      <DialogTitle>Payment for {booking.service.name}</DialogTitle>
+      <DialogDescription>Please select your payment method and confirm the details.</DialogDescription>
+    </DialogHeader>
+
+    {step === 1 && (
+      <RadioGroup onValueChange={(value) => handlePaymentMethodChange(value as "stripe" | "mpesa")}>
+        <div className="flex items-center space-x-2 mb-3">
+          <RadioGroupItem value="stripe" id="stripe" />
+          <Label htmlFor="stripe">Pay with Stripe</Label>
+        </div>
+        <div className="flex items-center space-x-2 mb-3">
+          <RadioGroupItem value="mpesa" id="mpesa" />
+          <Label htmlFor="mpesa">Pay with M-Pesa</Label>
+        </div>
+      </RadioGroup>
+    )}
+
+    {step === 2 && (
+      <div className="py-4 space-y-4">
+        <p><strong>Service:</strong> {booking.service.name}</p>
+        <p>
+          <strong>Price:</strong>{" "}
+          {new Intl.NumberFormat("en-US", { style: "currency", currency: "KSH" }).format(booking.service.price)}
+        </p>
+        <p><strong>Name:</strong> {booking.user.name}</p>
+        <p><strong>Email:</strong> {booking.user.email}</p>
+        <p>4242 4242 4242 4242, z-5numbers, cv-3no</p>
+        {paymentMethod === "stripe" && (
+          <div className="mt-4">
+            <CardElement />
           </div>
         )}
-        <DialogFooter>
-          {step === 2 && (
-            <Button onClick={() => setStep(1)} variant="outline">
-              Back
-            </Button>
-          )}
-          <Button onClick={onClose} variant="outline">
-            Cancel
-          </Button>
-          {step === 2 && <Button onClick={handleConfirmPayment}>Confirm Payment</Button>}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        {paymentMethod === "mpesa" && (
+          <div className="mt-4">
+            <Label htmlFor="phoneNumber">M-Pesa Phone Number</Label>
+            <Input
+              id="phoneNumber"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="M-Pesa phone number format 2700747076"
+            />
+          </div>
+        )}
+      </div>
+    )}
+
+    <DialogFooter className="flex justify-between sm:flex-col sm:space-y-2 sm:mt-4">
+      {step === 2 && (
+        <Button onClick={() => setStep(1)} variant="outline" className="w-full sm:w-auto">
+          Back
+        </Button>
+      )}
+      <Button onClick={onClose} variant="outline" className="w-full sm:w-auto">
+        Cancel
+      </Button>
+      {step === 2 && (
+        <Button onClick={handleConfirmPayment} className="w-full sm:w-auto">
+          Confirm Payment
+        </Button>
+      )}
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
   )
 }
 

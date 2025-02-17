@@ -15,18 +15,22 @@ export default function RootLayout({
 }) {
   return (
     <NextAuthSessionProvider>
-        <SidebarProvider defaultOpen={true}>
-          <div className="flex w-screen  bg-Background overflow-">
-            <AppSidebar />
-            <div className="flex-1 flex flex-col">
-              <Navbar />
-              <main className="flex-1 bg-background mt-24 mb-8 mx-2 p-2">
-                {children}
-              </main>
-            </div>
-          </div>
-        </SidebarProvider>
-        </NextAuthSessionProvider>
+  <SidebarProvider defaultOpen={true}>
+    <div className="flex bg-white h-screen w-screen">
+      {/* Set the sidebar z-index lower than the navbar */}
+      <AppSidebar className="z-10" />
+      
+      <div className="flex-1 flex flex-col w-full">
+        <Navbar />
+        
+        <main className="flex-1 bg-background pt-20 px-6 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  </SidebarProvider>
+</NextAuthSessionProvider>
+
   )
 }
 
