@@ -15,7 +15,7 @@ const data = [
   { name: "Sun", value: 8 },
 ]
 
-export default function Dashboard() {
+export default function AdminDashboard() {
   return (
     <div className="p-8 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
       <h1 className="text-3xl font-bold text-blue-800 mb-6">Garage Management Dashboard</h1>

@@ -11,13 +11,41 @@ import {
 import { Button } from "@/components/ui/button";
 // import { getAllServices } from "@/actions/Services";
 import { getBookedServices } from "@/actions/Services";
+import { options } from "@/app/api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth";
+interface Service {
+  id: number;
+  userId: number; // userId to associate the booking with the user
+  serviceId: number;
+  categoryId: number;
+  description: string;
+  bookedDate: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
+// Define the interface for the user object (optional, if you want to include user info)
+// interface User {
+//   id: number;
+//   name: string;
+//   email: string;
+//   password: string;
+//   role: string;
+//   createdAt: string;
+// }
 
 
 const PageView = async () => {
-  const services = await getBookedServices() || [];
+  const session = await getServerSession(options);
+  const userId = session?.user?.id; // Get the logged-in user's ID
+
+  const userServices = await getBookedServices() || [];
+
+  const services = userServices.filter((service: Service) => service.userId === userId);
+
   //   const editdata = useSelector((state: RootState) => state.property.editdata)
-  console.log(services, "booked services")
+  //console.log(services, "booked services")
 
   return (
     <Card>

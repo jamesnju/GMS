@@ -90,7 +90,7 @@ export default function Home() {
       >
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <Image src="/logo.png" alt="logo" width={50} height={50} className="rounded-full" />
+            {/* <Image src="/logo.png" alt="logo" width={50} height={50} className="rounded-full" /> */}
             <h1 className="text-2xl font-bold">GMS</h1>
           </Link>
           <div className="flex items-center">
@@ -98,7 +98,7 @@ export default function Home() {
               <ul className="flex space-x-6">
                 {["Home", "Services", "About", "Contact"].map((item) => (
                   <motion.li key={item} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Link href={`/${item.toLowerCase()}`} className="hover:text-yellow-300 transition duration-300">
+                    <Link href={`#${item.toLowerCase()}`} className="hover:text-yellow-300 transition duration-300">
                       {item}
                     </Link>
                   </motion.li>
@@ -125,7 +125,7 @@ export default function Home() {
             {["Home", "Services", "About", "Contact"].map((item) => (
               <motion.li key={item} whileTap={{ scale: 0.95 }}>
                 <Link
-                  href={`/${item.toLowerCase()}`}
+                  href={`#${item.toLowerCase()}`}
                   className="block py-2 px-4 hover:bg-blue-700 rounded transition duration-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -138,7 +138,7 @@ export default function Home() {
       </motion.header>
 
       <main className="flex-grow">
-        <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-32 overflow-hidden">
+        <section id="home" className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-32 overflow-hidden">
           <motion.div
             className="absolute inset-0 opacity-20"
             initial={{ scale: 1.2 }}
@@ -174,15 +174,17 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
+              <Link href={"/auth"}>
               <Button className="bg-yellow-400 text-blue-800 hover:bg-yellow-300 text-lg py-6 px-10 rounded-full transition duration-300 shadow-lg">
                 Book a Service
                 <ChevronRight className="ml-2 h-6 w-6" />
               </Button>
+              </Link>
             </motion.div>
           </div>
         </section>
 
-        <section className="py-24 bg-white">
+        <section className="py-24 bg-white" id="services">
           <div className="container mx-auto">
             <motion.h2 className="text-4xl font-bold mb-12 text-center text-blue-600" {...fadeInUp}>
               Our Services
@@ -220,7 +222,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-gray-100 py-24">
+        <section className="bg-gray-100 py-24" id="about">
           <div className="container mx-auto">
             <motion.h2 className="text-4xl font-bold mb-12 text-center text-blue-600" {...fadeInUp}>
               What Our Customers Say
@@ -263,7 +265,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-24 bg-white">
+        <section className="py-24 bg-white" id="contact">
           <div className="container mx-auto">
             <motion.h2 className="text-4xl font-bold mb-12 text-center text-blue-600" {...fadeInUp}>
               Visit Us
@@ -342,15 +344,15 @@ export default function Home() {
       >
         <div className="container mx-auto text-center">
           <div className="flex justify-center items-center mb-8">
-            <Image src="/logo.png" alt="AutoPro Garage Logo" width={60} height={60} className="rounded-full" />
+            {/* <Image src="/logo.png" alt="AutoPro Garage Logo" width={60} height={60} className="rounded-full" /> */}
             <h2 className="text-3xl font-bold ml-4">AutoPro Garage</h2>
           </div>
           <p className="mb-6">&copy; 2024 AutoPro Garage. All rights reserved.</p>
           <div className="flex justify-center space-x-6">
-            <Link href="/privacy" className="hover:text-yellow-300 transition duration-300">
+            <Link href="#" className="hover:text-yellow-300 transition duration-300">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-yellow-300 transition duration-300">
+            <Link href="#" className="hover:text-yellow-300 transition duration-300">
               Terms of Service
             </Link>
           </div>

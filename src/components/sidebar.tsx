@@ -67,7 +67,7 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="border-t border-[#4d7c0f] p-4">
+      <SidebarFooter className="border-t border-[#4d7c0f] p-4 bg-Background">
         <div className="flex items-center space-x-4 mb-4">
           <Avatar>
             <AvatarImage src="/avatars/01.png" alt="User" />

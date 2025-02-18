@@ -1,38 +1,86 @@
-import React from 'react'
-import { columns } from './column'
+import React from 'react';
+import { columns } from './column';
 import { DataTable } from '@/shacdn/data-table';
-// import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getBookedServices } from '@/actions/Services';
-// import { Button } from '@/components/ui/button';
-export const dynamic = "force-dynamic"
+import { getServerSession } from 'next-auth';
+import { options } from '@/app/api/auth/[...nextauth]/options';
 
-
-
-const PageView = async() => {
-  const BookingsResponse = await getBookedServices() || [];
-console.log(BookingsResponse, "ress")
-if(!BookingsResponse){
-  return <div> No Data </div>
+// Define the interface for the nested service object
+interface Service {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  categoryId: number;
+  createdAt: string;
+  updatedAt: string;
 }
+
+// Define the interface for the nested category object
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+  createdAt: string;
+}
+
+// Define the interface for the nested user object
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  createdAt: string;
+}
+
+// Define the interface for the main Booking object
+interface Booking {
+  id: number;
+  userId: number;
+  serviceId: number;
+  categoryId: number;
+  description: string;
+  bookedDate: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  service: Service;
+  category: Category;
+  user: User;
+}
+
+export const dynamic = "force-dynamic";
+
+const PageView = async () => {
+  const session = await getServerSession(options);
+  const userId = session?.user?.id; // Ensure session has user data
+  
+  if (!userId) {
+    return <div>No session found</div>; // Handle case where userId is not found
+  }
+
+  const userBooking = await getBookedServices() || [];
+
+  // Filter bookings based on the logged-in user's ID
+  const BookingsResponse = userBooking.filter((booking: Booking) => booking.userId === userId); // Explicitly define the type of 'booking'
+
+  if (BookingsResponse.length === 0) {
+    return <div>No Data</div>; // Return if no bookings are found for the user
+  }
 
   return (
     <Card>
-    {/* <div className='overflow-hidden mx-28 rounded-md shadow-lg '> */}
-        <CardHeader>
+      <CardHeader>
         <CardTitle className='text-Text'>Manage Appointments</CardTitle>
-        <CardDescription className='texxt-Text'>manage Appointments by updating, canceling and viewing history of Appointments.</CardDescription>
+        <CardDescription className='texxt-Text'>
+          Manage appointments by updating, canceling, and viewing the history of appointments.
+        </CardDescription>
       </CardHeader>
-      {/* <div className="flex w-full flex-end justify-end mr-20">
-        <Link href='/book'>
-      <Button className='flex-end font-bold text-white white px-6 py-3 rounded-md'>Book</Button>
-        </Link>
-      </div> */}
       <DataTable columns={columns} data={BookingsResponse} />
-
-    {/* </div> */}
     </Card>
-  )
-}
+  );
+};
 
-export default PageView
+export default PageView;

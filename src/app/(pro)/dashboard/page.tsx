@@ -1,10 +1,23 @@
-import { CustomerDashboard } from "@/components/CustomerDashboard"
+import { getBookedServices } from '@/actions/Services';
+import { options } from '@/app/api/auth/[...nextauth]/options';
+import { CustomerDashboard } from '@/components/CustomerDashboard'
+import AdminDashboard from '@/Globalcomponents/admin/AdminDashboard';
+import { getServerSession } from 'next-auth';
 
-export default function DashboardPage() {
+const page = async() => {
+    const BookingsResponse = await getBookedServices() || [];
+
+  const session = await getServerSession( options );
   return (
-    <div className="container mx-auto py-10 space-y-10">
-      <CustomerDashboard />
+    <div>
+      {session?.user.role == "Admin" ? (
+        <AdminDashboard/>
+      ): (
+
+      <CustomerDashboard BookingsResponse={BookingsResponse}/>
+      )}
     </div>
   )
 }
 
+export default page
