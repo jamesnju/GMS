@@ -39,10 +39,13 @@ interface Service {
 const PageView = async () => {
   const session = await getServerSession(options);
   const userId = session?.user?.id; // Get the logged-in user's ID
+  const userRole = session?.user?.role; // Get user role
+
 
   const userServices = await getBookedServices() || [];
 
-  const services = userServices.filter((service: Service) => service.userId === userId);
+  //const services = userServices.filter((service: Service) => service.userId === userId);
+  const services = userRole === "Admin" ? userServices : userServices.filter((service: Service) => service.userId === userId);
 
   //   const editdata = useSelector((state: RootState) => state.property.editdata)
   //console.log(services, "booked services")

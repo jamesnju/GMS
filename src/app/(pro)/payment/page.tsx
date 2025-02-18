@@ -56,15 +56,16 @@ interface Booking {
 }
 const PageView = async () => {
   const session = await getServerSession(options);
-  const userId = session?.user?.id; // Get the logged-in user's ID
-  const userBooking = (await getBookedServices()) || [];
-  
-  
-    const BookingsResponse = userBooking.filter((booking: Booking) => booking.userId === userId); // Explicitly define the type of 'booking'
-  
+  const userId = session?.user?.id; // Get logged-in user's ID
+  const userRole = session?.user?.role; // Get user role
 
-  if (!BookingsResponse) {
-    return <div> No Data </div>;
+  const userBooking = (await getBookedServices()) || [];
+
+  // If the user is an admin, show all bookings; otherwise, show only their own
+  const BookingsResponse = userRole === "Admin" ? userBooking : userBooking.filter((booking: Booking) => booking.userId === userId);
+
+  if (!BookingsResponse.length) {
+    return <div>No Data</div>;
   }
 
   return (
@@ -72,8 +73,7 @@ const PageView = async () => {
       <CardHeader>
         <CardTitle className="text-Text">Manage Appointments</CardTitle>
         <CardDescription className="texxt-Text">
-          manage Appointments by updating, canceling and viewing history of
-          Appointments.
+          Manage appointments by updating, canceling, and viewing history.
         </CardDescription>
       </CardHeader>
 
@@ -83,3 +83,4 @@ const PageView = async () => {
 };
 
 export default PageView;
+

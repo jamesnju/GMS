@@ -55,32 +55,36 @@ export const dynamic = "force-dynamic";
 
 const PageView = async () => {
   const session = await getServerSession(options);
-  const userId = session?.user?.id; // Ensure session has user data
-  
+  const userId = session?.user?.id; // Get logged-in user's ID
+  const userRole = session?.user?.role; // Get user role
+
   if (!userId) {
     return <div>No session found</div>; // Handle case where userId is not found
   }
 
-  const userBooking = await getBookedServices() || [];
+  const userBooking = (await getBookedServices()) || [];
 
-  // Filter bookings based on the logged-in user's ID
-  const BookingsResponse = userBooking.filter((booking: Booking) => booking.userId === userId); // Explicitly define the type of 'booking'
+  // If the user is an admin, show all bookings; otherwise, show only their own
+  const BookingsResponse = userRole === "Admin" ? userBooking : userBooking.filter((booking: Booking) => booking.userId === userId);
 
-  if (BookingsResponse.length === 0) {
-    return <div>No Data</div>; // Return if no bookings are found for the user
+  if (!BookingsResponse.length) {
+    return <div>No Data</div>; // Return if no bookings are found
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='text-Text'>Manage Appointments</CardTitle>
-        <CardDescription className='texxt-Text'>
-          Manage appointments by updating, canceling, and viewing the history of appointments.
+        <CardTitle className="text-Text">Manage Appointments</CardTitle>
+        <CardDescription className="texxt-Text">
+          Manage appointments by updating, canceling, and viewing the history.
         </CardDescription>
       </CardHeader>
+
       <DataTable columns={columns} data={BookingsResponse} />
     </Card>
   );
 };
 
 export default PageView;
+
+
