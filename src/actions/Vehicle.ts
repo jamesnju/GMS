@@ -23,3 +23,61 @@ export const postVehicle = async(cardetails: { make: string; model: string; year
         return data;
     }
     }
+    export const getVehicles = async()=>{
+        try {
+            const res = await fetch(baseUrl + "vehicles",{
+                method: "GET",
+                headers:{
+                    "Content-Type": "application/json"
+                }
+            })
+            if(res.ok){
+                const data = await res.json();
+                return data?.data;
+            }
+            throw new Error ("Network issue");
+            
+        } catch (error) {
+            console.error(error," something went wrong")
+        }
+      
+
+    }
+
+    export const updateVehicle = async(id: number, cardetails: { make: string; model: string; year: number; licensePlate: string; userId?: number | undefined; })=>{
+        try {
+            const res = await fetch(baseUrl + `${id}/vehicle`,{
+                method: "PATCH",
+                headers:{
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(cardetails)
+            })
+            if(res.ok){
+                const data = await res.json();
+                return data;
+            }
+            throw new Error ("Network issue");
+            
+        } catch (error) {
+            console.error(error," something went wrong")
+        }
+    }
+    export const deleteVehicle = async(id: number)=>{
+        try {
+            const res = await fetch(baseUrl + `vehicle/${id}`,{
+                method: "DELETE",
+                headers:{
+                    "Content-Type": "application/json"
+                }
+            })
+            if(res.ok){
+                const data = await res.json();
+                return data;
+            }
+            throw new Error ("Network issue");
+            
+        } catch (error) {
+            console.error(error," something went wrong")
+        }
+    }

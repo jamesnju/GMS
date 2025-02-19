@@ -8,65 +8,43 @@ import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis } 
 import { Cell, Pie, PieChart as RechartsPieChart } from "recharts"
 import { useSession } from "next-auth/react"
 import { format } from "date-fns"
-interface Service {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  categoryId: number;
-  createdAt: string;
-  updatedAt: string;
-}
 
-interface Category {
+interface Vehicle {
   id: number;
-  name: string;
-  description: string;
-  createdAt: string;
-}
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  role: string;
+  licensePlate: string;
+  userId: number;
+  make: string;
+  model: string;
+  year: number;
   createdAt: string;
 }
 
 interface Booking {
   id: number;
   userId: number;
-  serviceId: number;
-  categoryId: number;
-  description: string;
   bookedDate: string;
   status: string;
-  createdAt: string;
-  updatedAt: string;
-  service: Service;
-  category: Category;
-  user: User;
 }
 
 interface BookingResponse {
   BookingsResponse: Booking[];
+  Vehicle: Vehicle[];
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]
 
-export function CustomerDashboard({ BookingsResponse }: BookingResponse) {
+export function CustomerDashboard({ BookingsResponse, Vehicle }: BookingResponse) {
   const { data: session } = useSession()
 
-  // Filter bookings by the logged-in user's userId
-  const userBookings = BookingsResponse.filter((booking) => booking.userId === session?.user?.id)
+  // Filter bookings for the logged-in user
+  const userBookings = BookingsResponse.filter(booking => booking.userId === session?.user?.id)
 
-  // Aggregate appointments by month for the current user
+  // Aggregate appointments by month
   const aggregateAppointments = () => {
     const monthCounts: { [key: string]: number } = {}
 
-    userBookings.forEach((booking) => {
-      const bookedMonth = format(new Date(booking.bookedDate), 'MMM') // Extract the month (Jan, Feb, etc.)
+    userBookings.forEach(booking => {
+      const bookedMonth = format(new Date(booking.bookedDate), 'MMM')
       monthCounts[bookedMonth] = (monthCounts[bookedMonth] || 0) + 1
     })
 
@@ -79,11 +57,21 @@ export function CustomerDashboard({ BookingsResponse }: BookingResponse) {
 
   const appointmentData = aggregateAppointments()
 
-  const vehicleData = [
-    { name: "Sedan", value: 2 },
-    { name: "SUV", value: 1 },
-    { name: "Truck", value: 1 },
-  ]
+  // Filter vehicles for the logged-in user
+  const userVehicles = Vehicle.filter(v => v.userId === session?.user?.id)
+
+  // Aggregate vehicle data by model
+  const vehicleCount: { [key: string]: number } = {}
+
+  userVehicles.forEach(v => {
+    vehicleCount[v.model] = (vehicleCount[v.model] || 0) + 1
+  })
+
+  const vehicleData = Object.keys(vehicleCount).map((model, index) => ({
+    name: model,
+    value: vehicleCount[model],
+    color: COLORS[index % COLORS.length]
+  }))
 
   return (
     <div className="container mx-auto p-2 space-y-6">
@@ -124,7 +112,7 @@ export function CustomerDashboard({ BookingsResponse }: BookingResponse) {
                   dataKey="value"
                 >
                   {vehicleData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
               </RechartsPieChart>
@@ -146,7 +134,7 @@ export function CustomerDashboard({ BookingsResponse }: BookingResponse) {
                 </Link>
               </Button>
               <Button asChild className="w-full">
-                <Link href="/vehicles">
+                <Link href="/profile">
                   <Car className="mr-2 h-4 w-4" /> Vehicles
                 </Link>
               </Button>
@@ -167,4 +155,3 @@ export function CustomerDashboard({ BookingsResponse }: BookingResponse) {
     </div>
   )
 }
-

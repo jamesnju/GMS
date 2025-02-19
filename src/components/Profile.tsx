@@ -8,14 +8,12 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  //FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// import { toast } from "@/components/ui/use-toast"
 import {
   Card,
   CardContent,
@@ -24,17 +22,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { toast } from "@/hooks/use-toast";
-
 import { useSession } from "next-auth/react";
 import { postVehicle } from "@/actions/Vehicle";
 import { Loader } from "lucide-react";
 import { toast } from "react-toastify";
-// interface Car {
-//   name: string;
-//   model: string;
-//   year: number;
-// }
+import { Badge } from "@/components/ui/badge";
+
+interface Vehicle {
+  id: number;
+  licensePlate: string;
+  userId: number;
+  make: string;
+  model: string;
+  year: number;
+  createdAt: string;
+}
+
 const profileSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -50,7 +53,7 @@ const profileSchema = z.object({
 const vehicleSchema = z.object({
   make: z.string().min(1, { message: "Make is required." }),
   model: z.string().min(1, { message: "Model is required." }),
-  year: z.string().regex(/^\d{4}$/, { message: "Please enter a valid year." }).transform((val)=> Number ((val))).refine((val) => val >= 1900),
+  year: z.string().regex(/^\d{4}$/, { message: "Please enter a valid year." }).transform((val) => Number((val))).refine((val) => val >= 1900),
   licensePlate: z.string().min(1, { message: "License plate is required." }),
   userId: z.number().optional(),
 });
@@ -72,12 +75,12 @@ const passwordSchema = z
     path: ["confirmPassword"],
   });
 
-export function Profile() {
+export function Profile({ vehicles: initialVehicles = [] }: { vehicles: Vehicle[] }) {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
-  const [vehicles, setVehicles] = useState([
-    { make: "Toyota", model: "Camry", year: 2020, licensePlate: "ABC123" },
-  ]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(Array.isArray(initialVehicles) ? initialVehicles : []);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -95,7 +98,7 @@ export function Profile() {
       model: "",
       year: 2020,
       licensePlate: "",
-      userId: session?.user.id
+      userId: session?.user.id,
     },
   });
 
@@ -114,38 +117,51 @@ export function Profile() {
     //   description: "Your profile information has been updated successfully.",
     // });
   }
+
   const userId = session?.user?.id;
+
   async function onVehicleSubmit(values: z.infer<typeof vehicleSchema>) {
-    setVehicles([...vehicles, values]);
-    console.log(values, "car values");
+    if (isEditing && selectedVehicle) {
+      const updatedVehicles = vehicles.map((vehicle) => (vehicle.licensePlate === selectedVehicle.licensePlate ? { ...vehicle, ...values } : vehicle));
+      setVehicles(updatedVehicles);
+      updateVehicle(updatedVehicles);
+      setIsEditing(false);
+      setSelectedVehicle(null);
+    } else {
+      const newVehicle: Vehicle = {
+        id: vehicles.length + 1, // Generate a new ID for the vehicle
+        licensePlate: values.licensePlate,
+        userId: userId!,
+        make: values.make,
+        model: values.model,
+        year: values.year,
+        createdAt: new Date().toISOString(),
+      };
+      const newVehicles = [...vehicles, newVehicle];
+      setVehicles(newVehicles);
+      updateVehicle(newVehicles);
+    }
+
     const cardetails = {
       ...values,
       userId,
-     
     };
+
     try {
-      
       setIsLoading(true);
       const res = await postVehicle(cardetails);
-      if(res.ok){
-        toast.error('something went Wrong!');
+      if (res.ok) {
+        toast.error("Something went wrong!");
         setIsLoading(false);
       }
       setIsLoading(false);
-      toast.success("vehicle addded");
+      toast.success("Vehicle added");
       vehicleForm.reset();
-     
-
     } catch (error) {
       setIsLoading(false);
-      toast.error("something went wrong")
-      console.log(error)
-
+      toast.error("Something went wrong");
+      console.log(error);
     }
-    // toast({
-    //   title: "Vehicle added",
-    //   description: "Your vehicle has been added successfully.",
-    // });
   }
 
   function onPasswordSubmit() {
@@ -155,28 +171,50 @@ export function Profile() {
     // });
   }
 
+  function handleEdit(vehicle: Vehicle) {
+    setIsEditing(true);
+    setSelectedVehicle(vehicle);
+    vehicleForm.setValue("make", vehicle.make);
+    vehicleForm.setValue("model", vehicle.model);
+    vehicleForm.setValue("year", vehicle.year);
+    vehicleForm.setValue("licensePlate", vehicle.licensePlate);
+  }
+
+  function handleDelete(vehicle: Vehicle) {
+    const updatedVehicles = vehicles.filter((v) => v.licensePlate !== vehicle.licensePlate);
+    setVehicles(updatedVehicles);
+    deleteVehicle(updatedVehicles);
+  }
+
+  function handleVehicleClick(vehicle: Vehicle) {
+    setSelectedVehicle(vehicle);
+  }
+
+  function updateVehicle(updatedVehicles: Vehicle[]) {
+    // Implement the update vehicle logic
+    console.log("Updated vehicles:", updatedVehicles);
+  }
+
+  function deleteVehicle(updatedVehicles: Vehicle[]) {
+    // Implement the delete vehicle logic
+    console.log("Deleted vehicles:", updatedVehicles);
+  }
+
   return (
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader>
         <CardTitle>Profile</CardTitle>
-        <CardDescription>
-          Manage your account settings and preferences.
-        </CardDescription>
+        <CardDescription>Manage your account settings and preferences.</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="personal" className="w-full">
           <TabsList>
             <TabsTrigger value="personal">Personal Information</TabsTrigger>
             <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
-            {/* <TabsTrigger value="password">Password</TabsTrigger> */}
           </TabsList>
           <TabsContent value="personal">
-            {/* profile infor */}
             <Form {...profileForm}>
-              <form
-                onSubmit={profileForm.handleSubmit(onProfileSubmit)}
-                className="space-y-8"
-              >
+              <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-8">
                 <FormField
                   control={profileForm.control}
                   name="name"
@@ -197,12 +235,7 @@ export function Profile() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="john@example.com"
-                          {...field}
-                          value={session?.user?.email}
-                          disabled
-                        />
+                        <Input placeholder="john@example.com" {...field} value={session?.user?.email} disabled />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -215,51 +248,52 @@ export function Profile() {
                     <FormItem>
                       <FormLabel>Role</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="customer"
-                          {...field}
-                          value={session?.user?.role}
-                          disabled
-                        />
+                        <Input placeholder="customer" {...field} value={session?.user?.role} disabled />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                {/* <Button type="submit">Update Profile</Button> */}
               </form>
             </Form>
-
-            {/* vehicle details */}
           </TabsContent>
           <TabsContent value="vehicles">
             <div className="space-y-8">
               <div>
                 <h3 className="text-lg font-medium">Saved Vehicles</h3>
-                <ul className="mt-4 space-y-4">
-                  {vehicles.map((vehicle, index) => (
-                    <li key={index} className="bg-muted p-4 rounded-md">
-                      <p>
-                        <strong>Make:</strong> {vehicle.make}
-                      </p>
-                      <p>
-                        <strong>Model:</strong> {vehicle.model}
-                      </p>
-                      <p>
-                        <strong>Year:</strong> {vehicle.year}
-                      </p>
-                      <p>
-                        <strong>License Plate:</strong> {vehicle.licensePlate}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
+                <div className="flex flex-wrap gap-2">
+                  {vehicles.length > 0 ? (
+                    vehicles.map((vehicle, index) => (
+                      <Badge key={index} onClick={() => handleVehicleClick(vehicle)} className="cursor-pointer">
+                        {vehicle.make} {vehicle.model}
+                      </Badge>
+                    ))
+                  ) : (
+                    <p>No vehicles yet.</p>
+                  )}
+                </div>
+                {selectedVehicle && (
+                  <div className="mt-4 p-4 bg-gray-100 rounded-md">
+                    <h3 className="text-lg font-medium">Vehicle Details</h3>
+                    <p>
+                      <strong>Make:</strong> {selectedVehicle.make}
+                    </p>
+                    <p>
+                      <strong>Model:</strong> {selectedVehicle.model}
+                    </p>
+                    <p>
+                      <strong>Year:</strong> {selectedVehicle.year}
+                    </p>
+                    <p>
+                      <strong>License Plate:</strong> {selectedVehicle.licensePlate}
+                    </p>
+                    <Button onClick={() => handleEdit(selectedVehicle)}>Edit</Button>
+                    <Button onClick={() => handleDelete(selectedVehicle)}>Delete</Button>
+                  </div>
+                )}
               </div>
               <Form {...vehicleForm}>
-                <form
-                  onSubmit={vehicleForm.handleSubmit(onVehicleSubmit)}
-                  className="space-y-8"
-                >
+                <form onSubmit={vehicleForm.handleSubmit(onVehicleSubmit)} className="space-y-8">
                   <FormField
                     control={vehicleForm.control}
                     name="make"
@@ -313,11 +347,7 @@ export function Profile() {
                     )}
                   />
                   <Button type="submit">
-                    {isLoading ? (
-                      <Loader className="text-white animate animate-spin" />
-                    ) : (
-                      "Add Vehicle"
-                    )}
+                    {isLoading ? <Loader className="text-white animate animate-spin" /> : isEditing ? "Update Vehicle" : "Add Vehicle"}
                   </Button>
                 </form>
               </Form>
@@ -325,10 +355,7 @@ export function Profile() {
           </TabsContent>
           <TabsContent value="password">
             <Form {...passwordForm}>
-              <form
-                onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
-                className="space-y-8"
-              >
+              <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-8">
                 <FormField
                   control={passwordForm.control}
                   name="currentPassword"

@@ -47,16 +47,26 @@ interface Booking {
   user: User;
 }
 
+interface Vehicle {
+  id: number;
+  licensePlate: string;
+  userId: number;
+  make: string;
+  model: string;
+  year: number;
+  createdAt: string;
+}
 interface BookingResponse {
   BookingsResponse: Booking[];
   Users: User[];
+  Vehicle: Vehicle[];
 }
 
-export default function AdminDashboard({ BookingsResponse, Users }: BookingResponse) {
+export default function AdminDashboard({ BookingsResponse, Users,Vehicle }: BookingResponse) {
   const activeCustomers = new Set(Users.map((user) => user.id)).size;
   const revenue = BookingsResponse.reduce((acc, booking) => acc + booking.service.price, 0)
   const pendingServices = BookingsResponse.filter((booking) => booking.status === "Pending").length
-
+  const vehicleCount = Vehicle.length
   const aggregateAppointments = () => {
     const monthCounts: { [key: string]: number } = {}
 
@@ -85,7 +95,7 @@ export default function AdminDashboard({ BookingsResponse, Users }: BookingRespo
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
-          { title: "Total Vehicles", value: "124", icon: Car, color: "bg-purple-500" },
+          { title: "Total Vehicles", value: vehicleCount, icon: Car, color: "bg-purple-500" },
           { title: "Pending Services", value: pendingServices, icon: Wrench, color: "bg-yellow-500" },
           { title: "Revenue (Monthly)", value: `$${revenue.toLocaleString()}`, icon: DollarSign, color: "bg-green-500" },
           { title: "Active Customers", value: activeCustomers, icon: Users, color: "bg-red-500" },

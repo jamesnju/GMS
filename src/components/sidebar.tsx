@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Calendar, CreditCard, LayoutDashboard, Settings, Users, Wrench, ClipboardList, Mail, LogOut, File } from 'lucide-react'
+import { Calendar, CreditCard, LayoutDashboard, Settings, Users, Wrench, ClipboardList, Mail, LogOut, File, BadgeDollarSign } from 'lucide-react'
 
 import { cn } from "@/lib/utils"
 import {
@@ -25,6 +25,7 @@ const menuItems = [
   { name: 'Service Booking', icon: Calendar, href: '/servicesBooking', roles: ['Admin', 'customer'] },
   { name: 'Appointments', icon: ClipboardList, href: '/appointment', roles: ['Admin', 'customer'] },
   { name: 'Payment', icon: CreditCard, href: '/payment', roles: ['Admin', 'customer'] },
+  { name: 'Payment Status', icon: BadgeDollarSign, href: '/paymentStatus', roles: ['Admin', 'customer'] },
   { name: 'Service Management', icon: Settings, href: '/serviceManagement', roles: ['Admin'] },
   { name: 'Customer Management', icon: Users, href: '/customers', roles: ['Admin'] },
   { name: 'Payment Management', icon: CreditCard, href: '/', roles: ['Admin'] },

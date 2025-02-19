@@ -48,7 +48,7 @@ const PageView = async () => {
   const services = userRole === "Admin" ? userServices : userServices.filter((service: Service) => service.userId === userId);
 
   //   const editdata = useSelector((state: RootState) => state.property.editdata)
-  //console.log(services, "booked services")
+  console.log(services, "booked services")
 
   return (
     <Card>

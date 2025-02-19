@@ -27,6 +27,7 @@ export type Services = {
   categoryId: string;
   createdAt: string;
   status: string;
+  bookedDate: string;
 };
 
 const ConfirmDeleteModal = ({
@@ -153,12 +154,34 @@ export const columns: ColumnDef<Services>[] = [
     ),
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    id: "status",
+    header: "Service Status",
+    cell: ({ row }) => {
+      const status = row.original.status.toLowerCase();
+      return (
+        <span
+          className={`px-3 py-1 rounded-md text-sm font-medium ${
+            status === "pending"
+              ? "bg-yellow-500 text-white"
+              : status === "completed"
+              ? "bg-green-500 text-white"
+              : status === "waiting verification"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-500 text-white"
+          }`}
+        >
+          {row.original.status}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "bookedDate",
+    header: "Booked Date",
     cell: ({ row }) => (
       <div className="flex space-x-2">
-        <span className={`${row.original.status === "Pending" ? "text-orange-300" : row.original.status === "Canceled" ? "text-red-600" : row.original.status === "Confirmed" ? "text-green-400" : ""} max-w-[500px] truncate font-medium`}>
-          {row.original?.status}
+        <span className="max-w-[500px] truncate font-medium">
+          {new Date(row.original?.bookedDate).toLocaleDateString()}
         </span>
       </div>
     ),

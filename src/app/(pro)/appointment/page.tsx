@@ -67,9 +67,9 @@ const PageView = async () => {
   // If the user is an admin, show all bookings; otherwise, show only their own
   const BookingsResponse = userRole === "Admin" ? userBooking : userBooking.filter((booking: Booking) => booking.userId === userId);
 
-  if (!BookingsResponse.length) {
-    return <div>No Data</div>; // Return if no bookings are found
-  }
+  // if (!BookingsResponse.length) {
+  //   return <div>No Data</div>; // Return if no bookings are found
+  // }
 
   return (
     <Card>

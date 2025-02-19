@@ -122,9 +122,28 @@ export const columns: ColumnDef<services>[] = [
     header: "Name",
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    id: "status",
+    header: " Status",
+    cell: ({ row }) => {
+      const status = row.original.status.toLowerCase();
+      return (
+        <span
+          className={`px-3 py-1 rounded-md text-sm font-medium ${
+            status === "pending"
+              ? "bg-yellow-500 text-white"
+              : status === "completed"
+              ? "bg-green-500 text-white"
+              : status === "waiting verification"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-500 text-white"
+          }`}
+        >
+          {row.original.status}
+        </span>
+      );
+    },
   },
+
   // {
   //   accessorKey: "email",
   //   header: ({ column }) => {
