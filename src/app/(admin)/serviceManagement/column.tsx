@@ -125,7 +125,7 @@ export const columns: ColumnDef<services>[] = [
     id: "status",
     header: " Status",
     cell: ({ row }) => {
-      const status = row.original.status.toLowerCase();
+      const status = row.original.status ? row.original.status.toUpperCase() : "Available";
       return (
         <span
           className={`px-3 py-1 rounded-md text-sm font-medium ${
@@ -133,12 +133,14 @@ export const columns: ColumnDef<services>[] = [
               ? "bg-yellow-500 text-white"
               : status === "completed"
               ? "bg-green-500 text-white"
+              : status === "initiated" 
+              ? "bg-red-500 text-white"
               : status === "waiting verification"
               ? "bg-blue-500 text-white"
               : "bg-gray-500 text-white"
           }`}
         >
-          {row.original.status}
+        {row.original.status || "Available"}
         </span>
       );
     },

@@ -118,7 +118,7 @@ const ScheduleForm = ({ booking }: { booking: Booking }) => {
       </div>
       <div>
         <label htmlFor="status">Status</label>
-        <select id="status" {...register("status")} className="border p-2 rounded" disabled>
+        <select id="status" {...register("status")} className="border p-2 rounded" >
           <option value="Pending">Pending</option>
           <option value="Confirmed">Confirmed</option>
           <option value="Cancelled">Cancelled</option>
@@ -270,7 +270,7 @@ export const columns: ColumnDef<Booking>[] = [
     id: "status",
     header: "Appointment Status",
     cell: ({ row }) => {
-      const status = row.original.status.toLowerCase();
+      const status = row.original.status.toUpperCase();
       return (
         <span
           className={`px-3 py-1 rounded-md text-sm font-medium ${

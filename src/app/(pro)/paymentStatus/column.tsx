@@ -1,21 +1,21 @@
 "use client"
-import { useState } from "react";
+//import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import axios from "axios";
-import baseUrl from "@/utils/constant";
-import { toast } from "react-toastify";
+//import axios from "axios";
+//import baseUrl from "@/utils/constant";
+//import { toast } from "react-toastify";
 
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import PaymentModal from "./PaymentModal";
+//import { Elements } from "@stripe/react-stripe-js";
+//import { loadStripe } from "@stripe/stripe-js";
+//import PaymentModal from "./PaymentModal";
 
 // Load Stripe outside of the component to avoid recreating the Stripe object on every render
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+//const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface Payment {
   id: number;
@@ -116,35 +116,35 @@ const generateReceipt = (payment: Payment) => {
 };
 
 const ActionsCell = ({ payment }: { payment: Payment }) => {
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  //const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
-  const handleCancelTransaction = async () => {
-    try {
-      const response = await axios.post(`${baseUrl}/cancel-transaction`, { paymentId: payment.id });
-      console.log("Transaction cancelled:", response.data);
-      toast.success("Transaction cancelled successfully");
-    } catch (error) {
-      console.error("Failed to cancel transaction:", error);
-      toast.error("Failed to cancel transaction");
-    }
-  };
+  // const handleCancelTransaction = async () => {
+  //   try {
+  //     const response = await axios.post(`${baseUrl}/cancel-transaction`, { paymentId: payment.id });
+  //     console.log("Transaction cancelled:", response.data);
+  //     toast.success("Transaction cancelled successfully");
+  //   } catch (error) {
+  //     console.error("Failed to cancel transaction:", error);
+  //     toast.error("Failed to cancel transaction");
+  //   }
+  // };
 
   return (
     <>
       <div className="flex space-x-2">
-        <Button onClick={() => setIsPaymentModalOpen(true)} size="sm">
+        {/* <Button onClick={() => setIsPaymentModalOpen(true)} size="sm">
           Pay
-        </Button> 
+        </Button>  */}
         <Button onClick={() => generateReceipt(payment)} size="sm">
           Print Receipt
         </Button>
-        <Button onClick={handleCancelTransaction} size="sm" variant="destructive">
+        {/* <Button onClick={handleCancelTransaction} size="sm" variant="destructive">
           Cancel
-        </Button> 
+        </Button>  */}
       </div>
-      <Elements stripe={stripePromise}>
+      {/* <Elements stripe={stripePromise}>
         <PaymentModal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} payment={payment} />
-      </Elements>
+      </Elements> */}
     </>
   );
 };
@@ -169,12 +169,14 @@ export const columns: ColumnDef<Payment>[] = [
     id: "paymentStatus",
     header: "Payment Status",
     cell: ({ row }) => {
-      const status = row.original.paymentStatus.toLowerCase();
+      const status = row.original.paymentStatus.toUpperCase();
       return (
         <span
           className={`px-3 py-1 rounded-md text-sm font-medium ${
             status === "pending"
               ? "bg-yellow-500 text-white"
+              : status === "initiated" 
+              ? "bg-red-500 text-white"
               : status === "completed"
               ? "bg-green-500 text-white"
               : status === "waiting verification"
