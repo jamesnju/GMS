@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSidebar } from '@/components/ui/sidebar'
-// import Link from 'next/link'
+import Link from 'next/link'
 // import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 
@@ -67,9 +67,11 @@ export function Navbar() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <Link href={"/profile"}>
           <DropdownMenuItem>
             Profile
           </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem>
             Settings
           </DropdownMenuItem>

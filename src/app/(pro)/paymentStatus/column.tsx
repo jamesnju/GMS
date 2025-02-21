@@ -10,12 +10,6 @@ import { Download } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
-//import { Elements } from "@stripe/react-stripe-js";
-//import { loadStripe } from "@stripe/stripe-js";
-//import PaymentModal from "./PaymentModal";
-
-// Load Stripe outside of the component to avoid recreating the Stripe object on every render
-//const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface Payment {
   id: number;
@@ -26,94 +20,145 @@ interface Payment {
   paymentStatus: string;
   paymentDate: string;
   createdAt: string;
-  transactionId: string | null;
+  transactionId: string;
   merchantRequestId: string | null;
   mpesaReceipt: string | null;
+  user: {
+      id: number;
+      name: string;
+      email: string;
+      role: string;
+  };
+  bookingService: {
+      bookedDate: string;
+      service: {
+          name: string;
+          description: string;
+          price: number;
+      };
+  };
 }
+
+
+
 
 const generateReceipt = (payment: Payment) => {
   const doc = new jsPDF();
-  doc.setFontSize(18);
-  doc.text("Receipt", 105, 20, { align: "center" });
+
+  // Colors
+  const primaryColor:  [number, number, number] = [213, 85, 29]; // Orange
+  const textColor: [number, number, number] = [0, 0, 0]; // Black
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(26);
+  doc.setTextColor(...textColor);
+  doc.text("★ RECEIPT ★", 105, 20, { align: "center" });
+
+  // Business Details
+  doc.setFontSize(14);
+  doc.setTextColor(...primaryColor);
+  doc.text("Garage Management System", 105, 30, { align: "center" });
+  doc.text("4490 Mombasa", 105, 38, { align: "center" });
+  doc.text("Kilifi, NY 12210", 105, 46, { align: "center" });
+
+  // BILL TO & SHIP TO
   doc.setFontSize(12);
+  doc.setTextColor(...textColor);
+  doc.text("BILL", 20, 60);
+  // doc.text("SHIP TO", 100, 60);
 
-  // Draw the top section with the user name and date on the right
-  doc.text(`Date: ${new Date().toLocaleString()}`, 160, 30);
-  doc.text(`Name: ${payment.userId}`, 160, 40);
+  doc.text(payment.user.name, 20, 68);
+  doc.text(payment.user.email, 20, 76);
 
-  // Set a box around the header with a gap
-  doc.setLineWidth(0.5);
-  doc.rect(140, 20, 60, 30);
+  // doc.text(payment.user.name, 100, 68);
+  // doc.text(payment.user.email, 100, 76);
 
-  // Create the table header with a color background
-  const tableX = 20;
-  const tableY = 60; // Added gap between the header and the table
-  const tableWidth = 180;
-  const rowHeight = 12;
+  // Receipt details
+  doc.setFont("helvetica", "bold");
+  doc.text("RECEIPT #", 150, 60);
+  doc.text("RECEIPT DATE", 150, 68);
+  doc.text("P.O. #", 150, 76);
+  doc.text("DUE DATE", 150, 84);
 
-  // Set a background color for the table header
-  doc.setFillColor(220, 220, 220);
-  doc.rect(tableX, tableY, tableWidth, rowHeight, "F");
+  doc.setFont("helvetica", "normal");
+  doc.text(payment.id.toString(), 180, 60);
+  doc.text(new Date(payment.paymentDate).toLocaleDateString(), 180, 68);
+  doc.text("36", 180, 76);
+  const createdAtDate = new Date(payment.createdAt);
+createdAtDate.setDate(createdAtDate.getDate() + 10); 
 
-  // Set text color for header and make it stand out
-  doc.setTextColor(0, 51, 102); // Dark blue
-  doc.text("Price", tableX + 5, tableY + 8);
-  doc.text("Service Name", tableX + 70, tableY + 8);
+doc.text(createdAtDate.toLocaleDateString(), 180, 84);
+  //doc.text(new Date(payment.createdAt).toLocaleDateString(), 180, 84);
 
-  // Table Body
-  const data = [
-    [
-      `${new Intl.NumberFormat("en-US", { style: "currency", currency: "KSH" }).format(payment.amount)}`,
-      payment.paymentMethod,
-    ],
-  ];
 
-  // Draw table rows with lines
-  doc.setFillColor(255, 255, 255); // White color for rows
-  doc.setTextColor(51, 51, 51); // Dark grey text for rows
-  data.forEach((row, i) => {
-    // Draw row lines
-    doc.rect(tableX, tableY + (i + 1) * rowHeight, tableWidth, rowHeight, "S");
-    doc.text(row[0], tableX + 5, tableY + (i + 1) * rowHeight + 8); // Price
-    doc.text(row[1], tableX + 70, tableY + (i + 1) * rowHeight + 8); // Service Name
-  });
+  // Table Header
+  const tableStartY = 100;
+  doc.setFillColor(...primaryColor);
+  doc.setTextColor(255, 255, 255);
+  doc.rect(20, tableStartY, 170, 10, "F");
+  doc.text("ID", 25, tableStartY + 7);
+  doc.text("SERVICE NAME", 60, tableStartY + 7);
+  doc.text("UNIT PRICE", 130, tableStartY + 7);
+  doc.text("AMOUNT", 165, tableStartY + 7);
 
-  // Draw outer table border
-  doc.setLineWidth(1);
-  doc.rect(tableX - 2, tableY - 2, tableWidth + 4, rowHeight * (data.length + 1) + 4);
+  // Table Data
+  let y = tableStartY + 15;
+  doc.setTextColor(...textColor);
+  doc.text((payment.id).toString(), 25, y);
+  doc.text(payment.bookingService.service.name, 60, y);
+  doc.text(`KSH${payment.bookingService.service.price.toFixed(2)}`, 130, y);
+  doc.text(`KSH${payment.amount.toFixed(2)}`, 165, y);
 
-  // Closing message with more content
-  const closingY = tableY + (data.length + 1) * rowHeight + 20;
-  doc.setTextColor(0, 128, 0); // Dark green for "Thank you" message
-  doc.text("Thank you for your business!", 105, closingY, { align: "center" });
+  // Subtotal & Tax
+  y += 10;
+  doc.setFont("helvetica", "bold");
+  doc.text("Subtotal", 130, y);
+  doc.text(`$${payment.amount.toFixed(2)}`, 165, y);
+  y += 8;
+  doc.text("Sales Tax 5.0%", 130, y);
+  doc.text(`$${(payment.amount * 0.05).toFixed(2)}`, 165, y);
+  y += 10;
 
-  doc.setTextColor(255, 99, 71); // Tomato color for "Garage Service Management"
-  doc.text("Garage Service Management", 105, closingY + 10, { align: "center" });
+  // TOTAL
+  doc.setTextColor(...primaryColor);
+  doc.setFontSize(14);
+  doc.text("TOTAL", 130, y);
+  doc.text(`$${(payment.amount * 1.05).toFixed(2)}`, 165, y);
 
-  // Add more content related to the garage service system
+  // Signature
+  doc.setTextColor(...textColor);
+  doc.setFont("helvetica", "italic");
+  doc.text(payment.user.name, 140, y + 15);
+  doc.line(130, y + 18, 180, y + 18);
+
+  // Terms & Conditions
+  y += 30;
   doc.setFontSize(10);
-  doc.setTextColor(0, 0, 0); // Black color for additional content
-  doc.text(
-    "We provide high-quality auto repairs and services to ensure your vehicle is safe and reliable.",
-    20,
-    closingY + 30,
-    { maxWidth: 180, align: "center" }
-  );
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...primaryColor);
+  doc.text("TERMS & CONDITIONS", 20, y);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...textColor);
+  doc.text("Payment is due within 15 days", 20, y + 8);
+  doc.text("ADDITIONAL DETAILS", 20, y);
+  doc.setFont("helvetica", "bold");
+  doc.text(` TRANSACTION ID : ${payment.transactionId}`, 20, y + 16);
+  doc.text(`PAYMENT METHOD: ${payment.paymentMethod}`, 20, y + 24);
+  //doc.text("Routing: 098765432", 20, y + 32);
+  doc.text((`PAYMENT STATUS:  ${payment.paymentStatus}`), 20, y + 32);
 
-  doc.text(
-    "Our team of experienced mechanics is here to help with brake services, engine diagnostics, and more!",
-    20,
-    closingY + 40,
-    { maxWidth: 180, align: "center" }
-  );
 
-  // Final message with contact information
-  doc.setTextColor(0, 51, 102); // Blue color for contact information
-  doc.text("For more details, visit: www.garageservices.com", 20, closingY + 60, { align: "center" });
+  // Thank You Message
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...primaryColor);
+  doc.setFontSize(14);
+  doc.text("Thank you", 160, y + 40);
 
-  // Save the PDF
-  doc.save(`receipt_${payment.id}.pdf`);
+  // Save PDF
+  doc.save(`receipt${payment.id}.pdf`);
 };
+
+
 
 const ActionsCell = ({ payment }: { payment: Payment }) => {
   //const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
