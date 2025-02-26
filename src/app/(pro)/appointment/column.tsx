@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,21 +10,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {  Loader, MoreHorizontal } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Loader, MoreHorizontal } from "lucide-react";
+import { useState } from "react";
 import axios from "axios";
 import baseUrl from "@/utils/constant";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 // Define the validation schema for scheduling
 const formSchema = z.object({
-  bookedDate: z.preprocess((arg) => {
-    if (typeof arg === "string" || arg instanceof Date) return new Date(arg);
-  }, z.date({
-    required_error: "Please select a date.",
-  })),
+  bookedDate: z.preprocess(
+    (arg) => {
+      if (typeof arg === "string" || arg instanceof Date) return new Date(arg);
+    },
+    z.date({ required_error: "Please select a date." })
+  ),
   status: z.enum(["Pending", "Confirmed", "Cancelled"], {
     required_error: "Please select a status.",
   }),
@@ -58,6 +59,20 @@ interface User {
   createdAt: string;
 }
 
+// interface Payment {
+//   id: number;
+//   userId: number;
+//   bookingServiceId: number;
+//   amount: number;
+//   paymentMethod: string;
+//   paymentStatus: string;
+//   paymentDate: string;
+//   createdAt: string;
+//   transactionId: string | null;
+//   merchantRequestId: string | null;
+//   mpesaReceipt: string | null;
+// }
+
 interface Booking {
   id: number;
   userId: number;
@@ -71,11 +86,16 @@ interface Booking {
   service: Service;
   category: Category;
   user: User;
+  //payment?: Payment; // Added optional payment property
 }
 
 const ScheduleForm = ({ booking }: { booking: Booking }) => {
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       bookedDate: new Date(booking.bookedDate),
@@ -94,11 +114,10 @@ const ScheduleForm = ({ booking }: { booking: Booking }) => {
       toast.success("Booking updated successfully");
       setLoading(false);
       window.location.reload();
-      // Handle success (e.g., show success message, refetch data)
     } catch (error) {
       console.error("Failed to update booking:", error);
       toast.error("Failed to update booking, try again");
-      // Handle error (e.g., show error message)
+      setLoading(false);
     }
   };
 
@@ -109,24 +128,35 @@ const ScheduleForm = ({ booking }: { booking: Booking }) => {
         <input
           type="date"
           id="bookedDate"
-          {...register("bookedDate", {
-            valueAsDate: true, // Ensure the value is a Date object
-          })}
+          {...register("bookedDate", { valueAsDate: true })}
           className="border p-2 rounded"
         />
-        {errors.bookedDate && <p className="text-red-500">{errors.bookedDate.message}</p>}
+        {errors.bookedDate && (
+          <p className="text-red-500">{errors.bookedDate.message as string}</p>
+        )}
       </div>
       <div>
         <label htmlFor="status">Status</label>
-        <select id="status" {...register("status")} className="border p-2 rounded" >
+        <select
+          id="status"
+          {...register("status")}
+          className="border p-2 rounded text-Text"
+          disabled
+        >
           <option value="Pending">Pending</option>
           <option value="Confirmed">Confirmed</option>
           <option value="Cancelled">Cancelled</option>
         </select>
-        {errors.status && <p className="text-red-500">{errors.status.message}</p>}
+        {errors.status && (
+          <p className="text-red-500">{errors.status.message as string}</p>
+        )}
       </div>
       <Button type="submit" disabled={loading}>
-        {loading ? (<Loader className="animate animate-spin text-white" />) : "Update Booking"}
+        {loading ? (
+          <Loader className="animate animate-spin text-white" />
+        ) : (
+          "Update Booking"
+        )}
       </Button>
     </form>
   );
@@ -160,10 +190,16 @@ const ConfirmDeleteModal = ({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-lg font-semibold">Confirm Delete</h2>
-        <p className="text-gray-600">Are you sure you want to delete this booking?</p>
+        <p className="text-gray-600">
+          Are you sure you want to delete this booking?
+        </p>
         <div className="mt-4 flex justify-end space-x-2">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button variant="destructive" onClick={onConfirm}>Delete</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={onConfirm}>
+            Delete
+          </Button>
         </div>
       </div>
     </div>
@@ -172,7 +208,6 @@ const ConfirmDeleteModal = ({
 
 const ActionsCell = ({ booking }: { booking: Booking }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  //const service = row.original;
 
   const handleDelete = async (id: number) => {
     try {
@@ -202,17 +237,9 @@ const ActionsCell = ({ booking }: { booking: Booking }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {/* <DropdownMenuItem
-            onClick={() => {
-              // Assuming you have a method to start editing
-              // Here we would toggle an edit state or navigate to an edit page
-            }}
-          >
-            <Link href={`/appointment/${booking.id}`}>            
-            Edit
-            </Link>
-          </DropdownMenuItem> */}
-          <DropdownMenuItem onClick={() => setIsModalOpen(true)}>Delete</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsModalOpen(true)}>
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -243,20 +270,6 @@ export const columns: ColumnDef<Booking>[] = [
     accessorKey: "category.name",
     header: "Category Name",
   },
-  // {
-  //   accessorKey: "email",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //       >
-  //         Email
-  //         <ArrowUpDown className="ml-2 h-4 w-4" />
-  //       </Button>
-  //     );
-  //   },
-  // },
   {
     accessorKey: "bookedDate",
     header: "Appointment Date",
@@ -265,7 +278,6 @@ export const columns: ColumnDef<Booking>[] = [
       return <div>{date.toLocaleDateString()}</div>;
     },
   },
- 
   {
     id: "status",
     header: "Appointment Status",
@@ -274,11 +286,11 @@ export const columns: ColumnDef<Booking>[] = [
       return (
         <span
           className={`px-3 py-1 rounded-md text-sm font-medium ${
-            status === "pending"
+            status === "PENDING"
               ? "bg-yellow-500 text-white"
-              : status === "completed"
+              : status === "COMPLETED"
               ? "bg-green-500 text-white"
-              : status === "waiting verification"
+              : status === "WAITING VERIFICATION"
               ? "bg-blue-500 text-white"
               : "bg-gray-500 text-white"
           }`}
@@ -288,6 +300,35 @@ export const columns: ColumnDef<Booking>[] = [
       );
     },
   },
+  // {
+  //   id: "payment",
+  //   header: "Payment Status",
+  //   cell: ({ row }) => {
+  //     if (!row.original.payment) {
+  //       return (
+  //         <span className="px-3 py-1 rounded-md text-sm font-medium bg-red-500 text-white shadow-md">
+  //           Not Paid
+  //         </span>
+  //       );
+  //     }
+  //     const status = row.original.payment.paymentStatus.toUpperCase();
+  //     return (
+  //       <span
+  //         className={`px-3 py-1 rounded-md text-sm font-medium ${
+  //           status === "PENDING"
+  //             ? "bg-yellow-500 text-white"
+  //             : status === "COMPLETED"
+  //             ? "bg-green-500 text-white"
+  //             : status === "WAITING VERIFICATION"
+  //             ? "bg-blue-500 text-white"
+  //             : "bg-gray-500 text-white"
+  //         }`}
+  //       >
+  //         {row.original.payment.paymentStatus}
+  //       </span>
+  //     );
+  //   },
+  // },
   {
     id: "update",
     header: "Schedule",

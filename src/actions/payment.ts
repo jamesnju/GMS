@@ -8,7 +8,6 @@ import baseUrl from "@/utils/constant"
 //     description: string
 //   }
 export const getAllPayments = async () => {
-
     try {
         const res = await fetch(baseUrl + "payments",{
             method:"GET",

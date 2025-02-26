@@ -64,9 +64,11 @@ const PageView = async () => {
 
   const userBooking = (await getBookedServices()) || [];
 
-  // If the user is an admin, show all bookings; otherwise, show only their own
-  const BookingsResponse = userRole === "Admin" ? userBooking : userBooking.filter((booking: Booking) => booking.userId === userId);
-
+  // Filter bookings to exclude "Pending" status
+  const BookingsResponse = userRole === "Admin" 
+    ? userBooking.filter((booking: Booking) => booking.status !== "Pending")
+    : userBooking.filter((booking: Booking) => booking.userId === userId && booking.status !== "Pending");
+console.log(BookingsResponse, "the appoint")
   // if (!BookingsResponse.length) {
   //   return <div>No Data</div>; // Return if no bookings are found
   // }
@@ -86,5 +88,3 @@ const PageView = async () => {
 };
 
 export default PageView;
-
-

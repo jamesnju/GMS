@@ -108,7 +108,7 @@ export const getBookingById = async (id: number): Promise< null>=>{
 }
 
 export const updateDate = async (
-    values: { serviceId: number; description: string; categoryId: number; bookedDate: Date; userId?: number },
+    values: { serviceId: number; description: string; status: string; categoryId: number; bookedDate: Date; userId?: number },
     id: number
   ) => {
     const formattedValues = {

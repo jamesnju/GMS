@@ -65,7 +65,7 @@ export const postVehicle = async(cardetails: { make: string; model: string; year
     }
     export const deleteVehicle = async(id: number)=>{
         try {
-            const res = await fetch(baseUrl + `vehicle/${id}`,{
+            const res = await fetch(baseUrl + `${id}/vehicle`,{
                 method: "DELETE",
                 headers:{
                     "Content-Type": "application/json"
@@ -80,4 +80,4 @@ export const postVehicle = async(cardetails: { make: string; model: string; year
         } catch (error) {
             console.error(error," something went wrong")
         }
-    }
+    } 

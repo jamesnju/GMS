@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSession } from "next-auth/react";
-import { postVehicle } from "@/actions/Vehicle";
+import { postVehicle, updateVehicle, deleteVehicle } from "@/actions/Vehicle";
 import { Loader } from "lucide-react";
 import { toast } from "react-toastify";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +53,11 @@ const profileSchema = z.object({
 const vehicleSchema = z.object({
   make: z.string().min(1, { message: "Make is required." }),
   model: z.string().min(1, { message: "Model is required." }),
-  year: z.string().regex(/^\d{4}$/, { message: "Please enter a valid year." }).transform((val) => Number((val))).refine((val) => val >= 1900),
+  year: z
+    .string()
+    .regex(/^\d{4}$/, { message: "Please enter a valid year." })
+    .transform((val) => Number(val))
+    .refine((val) => val >= 1900, { message: "Year must be >= 1900" }),
   licensePlate: z.string().min(1, { message: "License plate is required." }),
   userId: z.number().optional(),
 });
@@ -78,7 +82,9 @@ const passwordSchema = z
 export function Profile({ vehicles: initialVehicles = [] }: { vehicles: Vehicle[] }) {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
-  const [vehicles, setVehicles] = useState<Vehicle[]>(Array.isArray(initialVehicles) ? initialVehicles : []);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(
+    Array.isArray(initialVehicles) ? initialVehicles : []
+  );
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -121,46 +127,51 @@ export function Profile({ vehicles: initialVehicles = [] }: { vehicles: Vehicle[
   const userId = session?.user?.id;
 
   async function onVehicleSubmit(values: z.infer<typeof vehicleSchema>) {
-    if (isEditing && selectedVehicle) {
-      const updatedVehicles = vehicles.map((vehicle) => (vehicle.licensePlate === selectedVehicle.licensePlate ? { ...vehicle, ...values } : vehicle));
-      setVehicles(updatedVehicles);
-      updateVehicle(updatedVehicles);
-      setIsEditing(false);
-      setSelectedVehicle(null);
-    } else {
-      const newVehicle: Vehicle = {
-        id: vehicles.length + 1, // Generate a new ID for the vehicle
-        licensePlate: values.licensePlate,
-        userId: userId!,
-        make: values.make,
-        model: values.model,
-        year: values.year,
-        createdAt: new Date().toISOString(),
-      };
-      const newVehicles = [...vehicles, newVehicle];
-      setVehicles(newVehicles);
-      updateVehicle(newVehicles);
-    }
-
     const cardetails = {
       ...values,
+      // Ensure year is a number
+      year: Number(values.year),
       userId,
     };
 
     try {
       setIsLoading(true);
-      const res = await postVehicle(cardetails);
-      if (res.ok) {
-        toast.error("Something went wrong!");
-        setIsLoading(false);
+      if (isEditing && selectedVehicle) {
+        // Update vehicle using the updateVehicle API function
+        const res = await updateVehicle(selectedVehicle.id, cardetails);
+        if (res) {
+          const updatedVehicles = vehicles.map((vehicle) =>
+            vehicle.id === selectedVehicle.id ? { ...vehicle, ...values } : vehicle
+          );
+          setVehicles(updatedVehicles);
+          toast.success("Vehicle updated successfully");
+        }
+        setIsEditing(false);
+        setSelectedVehicle(null);
+      } else {
+        // Add new vehicle using postVehicle API function
+        const res = await postVehicle(cardetails);
+        if (res) {
+          // Assuming res contains the vehicle information including an id
+          const newVehicle: Vehicle = {
+            id: res.id, // Use the id returned from the API
+            licensePlate: res.licensePlate,
+            userId: res.userId,
+            make: res.make,
+            model: res.model,
+            year: res.year,
+            createdAt: res.createdAt || new Date().toISOString(),
+          };
+          setVehicles([...vehicles, newVehicle]);
+          toast.success("Vehicle added successfully");
+        }
       }
-      setIsLoading(false);
-      toast.success("Vehicle added");
       vehicleForm.reset();
     } catch (error) {
-      setIsLoading(false);
+      console.error(error);
       toast.error("Something went wrong");
-      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -181,23 +192,23 @@ export function Profile({ vehicles: initialVehicles = [] }: { vehicles: Vehicle[
   }
 
   function handleDelete(vehicle: Vehicle) {
-    const updatedVehicles = vehicles.filter((v) => v.licensePlate !== vehicle.licensePlate);
+    // Optimistically update local state
+    const updatedVehicles = vehicles.filter((v) => v.id !== vehicle.id);
     setVehicles(updatedVehicles);
-    deleteVehicle(updatedVehicles);
+    // Call the deleteVehicle API function with the vehicle id
+    deleteVehicle(vehicle.id)
+      .then((res) => {
+        if(res)
+        toast.success("Vehicle deleted successfully");
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to delete vehicle");
+      });
   }
 
   function handleVehicleClick(vehicle: Vehicle) {
     setSelectedVehicle(vehicle);
-  }
-
-  function updateVehicle(updatedVehicles: Vehicle[]) {
-    // Implement the update vehicle logic
-    console.log("Updated vehicles:", updatedVehicles);
-  }
-
-  function deleteVehicle(updatedVehicles: Vehicle[]) {
-    // Implement the delete vehicle logic
-    console.log("Deleted vehicles:", updatedVehicles);
   }
 
   return (
@@ -222,7 +233,7 @@ export function Profile({ vehicles: initialVehicles = [] }: { vehicles: Vehicle[
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="John " {...field} readOnly />
+                        <Input placeholder="John Doe" {...field} readOnly />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -263,8 +274,12 @@ export function Profile({ vehicles: initialVehicles = [] }: { vehicles: Vehicle[
                 <h3 className="text-lg font-medium">Saved Vehicles</h3>
                 <div className="flex flex-wrap gap-2">
                   {vehicles.length > 0 ? (
-                    vehicles.map((vehicle, index) => (
-                      <Badge key={index} onClick={() => handleVehicleClick(vehicle)} className="cursor-pointer">
+                    vehicles.map((vehicle) => (
+                      <Badge
+                        key={vehicle.id}
+                        onClick={() => handleVehicleClick(vehicle)}
+                        className="cursor-pointer"
+                      >
                         {vehicle.make} {vehicle.model}
                       </Badge>
                     ))
@@ -347,7 +362,7 @@ export function Profile({ vehicles: initialVehicles = [] }: { vehicles: Vehicle[
                     )}
                   />
                   <Button type="submit">
-                    {isLoading ? <Loader className="text-white animate animate-spin" /> : isEditing ? "Update Vehicle" : "Add Vehicle"}
+                    {isLoading ? <Loader className="text-white animate-spin" /> : isEditing ? "Update Vehicle" : "Add Vehicle"}
                   </Button>
                 </form>
               </Form>

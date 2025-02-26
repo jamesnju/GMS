@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { CalendarIcon, Loader } from "lucide-react";
@@ -78,7 +78,7 @@ interface ServiceBookingFormProps {
   };
 }
 
-// Define the validation schema
+// Define the validation schema with status field added
 const formSchema = z.object({
   serviceId: z.number().min(1, "Please select a service."),
   description: z.string().nonempty("Please provide a description."),
@@ -86,6 +86,9 @@ const formSchema = z.object({
   userId: z.number().optional(),
   bookedDate: z.date({
     required_error: "Please select a date.",
+  }),
+  status: z.enum(["booked", "pending"], {
+    required_error: "Please select a status.",
   }),
 });
 
@@ -105,9 +108,9 @@ const EditServiceBookingForm = ({
       categoryId: bookingData.categoryId,
       bookedDate: new Date(bookingData.bookedDate),
       userId: session?.user?.id,
+      status: bookingData.status as "booked" | "pending", // set default status value from bookingData
     },
   });
-
   useEffect(() => {
     if (bookingData) {
       form.reset({
@@ -116,6 +119,7 @@ const EditServiceBookingForm = ({
         categoryId: bookingData.categoryId,
         bookedDate: new Date(bookingData.bookedDate),
         userId: session?.user?.id,
+        status: bookingData.status as "booked" | "pending",
       });
     }
   }, [bookingData, form, session]);
@@ -123,17 +127,21 @@ const EditServiceBookingForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     console.log("Form submitted:", values);
+    // Explicitly cast the status field to ensure it matches the expected type.
+    const typedValues: {
+      serviceId: number;
+      description: string;
+      categoryId: number;
+      bookedDate: Date;
+      userId?: number;
+      status: "booked" | "pending";
+    } = {
+      ...values,
+      status: values.status as "booked" | "pending",
+    };
+
     try {
-      const res = await updateDate(
-        values as {
-          serviceId: number;
-          description: string;
-          categoryId: number;
-          bookedDate: Date;
-          userId?: number;
-        },
-        bookingData.id
-      );
+      const res = await updateDate(typedValues, bookingData.id);
       if (!res.ok) {
         toast.success("Booking service updated successfully");
         window.location.reload();
@@ -278,6 +286,28 @@ const EditServiceBookingForm = ({
                       />
                     </PopoverContent>
                   </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="booked">book</SelectItem>
+                      <SelectItem value="pending">pending</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,180 +9,205 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
-import axios from "axios"
-// import baseUrl from "@/utils/constant"
-import { toast } from "react-toastify"
-import baseUrl from "@/utils/constant"
+} from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import axios from "axios";
+import { toast } from "react-toastify";
+import baseUrl from "@/utils/constant";
 
 interface Booking {
-  id: number
-  userId: number
-  serviceId: number
-  bookedDate: string
-  status: string
+  id: number;
+  userId: number;
+  serviceId: number;
+  bookedDate: string;
+  status: string;
   user: {
-    id: number
-    name: string
-    email: string
-  }
+    id: number;
+    name: string;
+    email: string;
+  };
   service: {
-    id: number
-    name: string
-    price: number
-  }
+    id: number;
+    name: string;
+    price: number;
+  };
 }
 
 interface PaymentModalProps {
-  isOpen: boolean
-  onClose: () => void
-  booking: Booking
+  isOpen: boolean;
+  onClose: () => void;
+  booking: Booking;
 }
 
 const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, booking }) => {
-  const [paymentMethod, setPaymentMethod] = useState<"stripe" | "mpesa">("stripe")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [step, setStep] = useState(1)
-  const stripe = useStripe()
-  const elements = useElements()
+  const [paymentMethod, setPaymentMethod] = useState<"stripe" | "mpesa">("stripe");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [step, setStep] = useState(1);
+  const stripe = useStripe();
+  const elements = useElements();
 
-  const handlePaymentMethodChange = (value: "stripe" | "mpesa") => {
-    setPaymentMethod(value)
-    setStep(2)
-  }
+  const handlePaymentMethodChange = (value: string) => {
+    setPaymentMethod(value as "stripe" | "mpesa");
+    setStep(2);
+  };
 
   const handleConfirmPayment = async () => {
     if (paymentMethod === "stripe") {
       if (!stripe || !elements) {
-        console.error("Stripe has not loaded")
-        return
+        console.error("Stripe has not loaded");
+        return;
       }
 
-      const cardElement = elements.getElement(CardElement)
+      const cardElement = elements.getElement(CardElement);
       if (!cardElement) {
-        console.error("Card element not found")
-        return
+        console.error("Card element not found");
+        return;
       }
 
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
+      const { error, paymentMethod: stripePaymentMethod } = await stripe.createPaymentMethod({
         type: "card",
         card: cardElement,
-      })
+      });
 
       if (error) {
-        console.error("Error creating payment method:", error)
-        toast.error("Payment failed. Please try again.")
-        return
+        console.error("Error creating payment method:", error);
+        toast.error("Payment failed. Please try again.");
+        return;
       }
 
       try {
-        const response = await axios.post( baseUrl + "/payments", {
+        const response = await axios.post(baseUrl + "/payments", {
           userId: booking.userId,
           bookingServiceId: booking.id,
           amount: booking.service.price,
-          paymentMethodId: paymentMethod.id,
-        })
-        console.log("Payment confirmed:", response.data)
-        toast.success("Payment confirmed successfully")
-        onClose()
+          paymentMethodId: stripePaymentMethod?.id,
+        });
+        console.log("Payment confirmed:", response.data);
+        toast.success("Payment confirmed successfully");
+        onClose();
       } catch (error) {
-        console.error("Failed to confirm payment:", error)
-        toast.error("Failed to confirm payment")
+        console.error("Failed to confirm payment:", error);
+        toast.error("Failed to confirm payment");
       }
     } else if (paymentMethod === "mpesa") {
       try {
-        //console.log("M-Pesa payment initiated:", userId, phoneNumber, amount, bookingServiceId)
-
         const response = await axios.post(baseUrl + "mpesa", {
           userId: booking.userId,
           phoneNumber: phoneNumber,
           amount: booking.service.price,
           bookingServiceId: booking.id,
-        })
-        console.log("M-Pesa payment initiated:", response.data)
-        toast.success("M-Pesa payment initiated. Please check your phone for the prompt.")
-        onClose()
+        });
+        console.log("M-Pesa payment initiated:", response.data);
+        toast.success("M-Pesa payment initiated. Please check your phone for the prompt.");
+        onClose();
       } catch (error) {
-        console.error("Failed to initiate M-Pesa payment:", error)
-        toast.error("Failed to initiate M-Pesa payment")
+        console.error("Failed to initiate M-Pesa payment:", error);
+        toast.error("Failed to initiate M-Pesa payment");
       }
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-  <DialogContent className="max-w-lg w-full sm:max-w-md sm:px-4 sm:py-6 p-6">
-    <DialogHeader>
-      <DialogTitle>Payment for {booking.service.name}</DialogTitle>
-      <DialogDescription>Please select your payment method and confirm the details.</DialogDescription>
-    </DialogHeader>
+      <DialogContent className="max-w-lg w-full sm:max-w-md p-6 sm:px-8 sm:py-8 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg bg-white dark:bg-gray-900 animate-fade-in">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+            Payment for {booking.service.name}
+          </DialogTitle>
+          <DialogDescription className="text-gray-600 dark:text-gray-300">
+            Please select your payment method and confirm the details.
+          </DialogDescription>
+        </DialogHeader>
 
-    {step === 1 && (
-      <RadioGroup onValueChange={(value) => handlePaymentMethodChange(value as "stripe" | "mpesa")}>
-        <div className="flex items-center space-x-2 mb-3">
-          <RadioGroupItem value="stripe" id="stripe" />
-          <Label htmlFor="stripe">Pay with Stripe</Label>
-        </div>
-        <div className="flex items-center space-x-2 mb-3">
-          <RadioGroupItem value="mpesa" id="mpesa" />
-          <Label htmlFor="mpesa">Pay with M-Pesa</Label>
-        </div>
-      </RadioGroup>
-    )}
+        {step === 1 && (
+          <RadioGroup
+            onValueChange={(value) => handlePaymentMethodChange(value)}
+            className="mt-4"
+          >
+            <div className="flex items-center space-x-2 mb-3">
+              <RadioGroupItem
+                value="stripe"
+                id="stripe"
+                className="border-gray-300 focus:ring-indigo-500"
+              />
+              <Label htmlFor="stripe" className="text-gray-700 dark:text-gray-200">
+                Pay with Stripe
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2 mb-3">
+              <RadioGroupItem
+                value="mpesa"
+                id="mpesa"
+                className="border-gray-300 focus:ring-indigo-500"
+              />
+              <Label htmlFor="mpesa" className="text-gray-700 dark:text-gray-200">
+                Pay with M-Pesa
+              </Label>
+            </div>
+          </RadioGroup>
+        )}
 
-    {step === 2 && (
-      <div className="py-4 space-y-4">
-        <p><strong>Service:</strong> {booking.service.name}</p>
-        <p>
-          <strong>Price:</strong>{" "}
-          {new Intl.NumberFormat("en-US", { style: "currency", currency: "KSH" }).format(booking.service.price)}
-        </p>
-        <p><strong>Name:</strong> {booking.user.name}</p>
-        <p><strong>Email:</strong> {booking.user.email}</p>
-        <p>4242 4242 4242 4242, z-5numbers, cv-3no</p>
-        {paymentMethod === "stripe" && (
-          <div className="mt-4">
-            <CardElement />
+        {step === 2 && (
+          <div className="py-4 space-y-4 text-gray-700 dark:text-gray-200">
+            <p>
+              <strong>Service:</strong> {booking.service.name}
+            </p>
+            <p>
+              <strong>Price:</strong>{" "}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "KSH",
+              }).format(booking.service.price)}
+            </p>
+            <p>
+              <strong>Name:</strong> {booking.user.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {booking.user.email}
+            </p>
+            {paymentMethod === "stripe" && (
+              <div className="mt-4">
+                <CardElement />
+              </div>
+            )}
+            {paymentMethod === "mpesa" && (
+              <div className="mt-4">
+                <Label htmlFor="phoneNumber" className="text-gray-700 dark:text-gray-200">
+                  M-Pesa Phone Number
+                </Label>
+                <Input
+                  id="phoneNumber"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="M-Pesa phone number format 254700000000"
+                  className="mt-1 border-gray-300 focus:ring-indigo-500"
+                />
+              </div>
+            )}
           </div>
         )}
-        {paymentMethod === "mpesa" && (
-          <div className="mt-4">
-            <Label htmlFor="phoneNumber">M-Pesa Phone Number</Label>
-            <Input
-              id="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="M-Pesa phone number format 2700747076"
-            />
-          </div>
-        )}
-      </div>
-    )}
 
-    <DialogFooter className="flex justify-between sm:flex-col sm:space-y-2 sm:mt-4">
-      {step === 2 && (
-        <Button onClick={() => setStep(1)} variant="outline" className="w-full sm:w-auto">
-          Back
-        </Button>
-      )}
-      <Button onClick={onClose} variant="outline" className="w-full sm:w-auto">
-        Cancel
-      </Button>
-      {step === 2 && (
-        <Button onClick={handleConfirmPayment} className="w-full sm:w-auto">
-          Confirm Payment
-        </Button>
-      )}
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
+        <DialogFooter className="flex justify-between flex-wrap gap-2 sm:flex-col sm:space-y-2 sm:mt-4">
+          {step === 2 && (
+            <Button onClick={() => setStep(1)} variant="outline" className="w-full sm:w-auto">
+              Back
+            </Button>
+          )}
+          <Button onClick={onClose} variant="outline" className="w-full sm:w-auto">
+            Cancel
+          </Button>
+          {step === 2 && (
+            <Button onClick={handleConfirmPayment} className="w-full sm:w-auto">
+              Confirm Payment
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
-  )
-}
-
-export default PaymentModal
-
+export default PaymentModal;

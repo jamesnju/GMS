@@ -30,6 +30,7 @@ export type Services = {
   bookedDate: string;
 };
 
+
 const ConfirmDeleteModal = ({
   isOpen,
   onClose,

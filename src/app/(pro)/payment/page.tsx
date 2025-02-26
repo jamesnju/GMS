@@ -53,6 +53,20 @@ interface Booking {
   service: Service;
   category: Category;
   user: User;
+  Payment?: Payment[];
+}
+interface Payment {
+  id: number;
+  userId: number;
+  bookingServiceId: number;
+  amount: number;
+  paymentMethod: string;
+  paymentStatus: string;
+  paymentDate: string;
+  createdAt: string;
+  transactionId: string | null;
+  merchantRequestId: string | null;
+  mpesaReceipt: string | null;
 }
 const PageView = async () => {
   const session = await getServerSession(options);
@@ -60,10 +74,14 @@ const PageView = async () => {
   const userRole = session?.user?.role; // Get user role
 
   const userBooking = (await getBookedServices()) || [];
-
   // If the user is an admin, show all bookings; otherwise, show only their own
-  const BookingsResponse = userRole === "Admin" ? userBooking : userBooking.filter((booking: Booking) => booking.userId === userId);
+  const filteredBookings = userRole === "Admin" 
+  ? userBooking.filter((booking: Booking) => booking.status === "book")
+  : userBooking.filter((booking: Booking) => booking.userId === userId && booking.status !== "Pending");
+  const BookingsResponse = filteredBookings.filter((booking: Booking) => booking.Payment && booking.Payment.length === 0);
+  // const BookingsResponse = filteredBookings.filter((booking: Payment) => booking.Payment && booking.Payment.length === 0);
 
+  console.log(BookingsResponse)
   // if (!BookingsResponse.length) {
   //   return <div>No Data</div>;
   // }
