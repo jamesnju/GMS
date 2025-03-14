@@ -16,6 +16,7 @@ interface Payment {
   userId: number;
   bookingServiceId: number;
   amount: number;
+  rejectionReason:string;
   paymentMethod: string;
   paymentStatus: string;
   paymentDate: string;
@@ -204,6 +205,11 @@ export const columns: ColumnDef<Payment>[] = [
     id: "user",
     header: "User",
     cell: ({ row }) => row.original.userId,
+  },
+  {
+    id: "rejectionReason",
+    header: "rejectionReason",
+    cell: ({ row }) => row?.original.rejectionReason || "Failed Transaction",
   },
   {
     id: "date",

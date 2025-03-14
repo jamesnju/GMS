@@ -65,8 +65,8 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div>
-      <div className="flex items-center py-4 mx-18 px-4">
+    <div className="">
+      <div className="flex items-center py-4 mx-18 px-4 ">
         {table.getAllColumns().map((column) => (
           <input
             key={column.id}
@@ -100,12 +100,12 @@ export function DataTable<TData, TValue>({
         </DropdownMenu>
       </div>
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
+        <Table >
+          <TableHeader className="bg-[#2f4214] ">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-[#2f4214] text-white">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="bg-[#2f4214] text-white">
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}

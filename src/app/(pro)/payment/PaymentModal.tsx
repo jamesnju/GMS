@@ -127,7 +127,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, booking })
             onValueChange={(value) => handlePaymentMethodChange(value)}
             className="mt-4"
           >
-            <div className="flex items-center space-x-2 mb-3">
+            {/* <div className="flex items-center space-x-2 mb-3">
               <RadioGroupItem
                 value="stripe"
                 id="stripe"
@@ -136,7 +136,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, booking })
               <Label htmlFor="stripe" className="text-gray-700 dark:text-gray-200">
                 Pay with Stripe
               </Label>
-            </div>
+            </div> */}
             <div className="flex items-center space-x-2 mb-3">
               <RadioGroupItem
                 value="mpesa"
@@ -151,46 +151,58 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, booking })
         )}
 
         {step === 2 && (
-          <div className="py-4 space-y-4 text-gray-700 dark:text-gray-200">
-            <p>
-              <strong>Service:</strong> {booking.service.name}
-            </p>
-            <p>
-              <strong>Price:</strong>{" "}
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "KSH",
-              }).format(booking.service.price)}
-            </p>
-            <p>
-              <strong>Name:</strong> {booking.user.name}
-            </p>
-            <p>
-              <strong>Email:</strong> {booking.user.email}
-            </p>
-            {paymentMethod === "stripe" && (
-              <div className="mt-4">
-                <CardElement />
-              </div>
-            )}
-            {paymentMethod === "mpesa" && (
-              <div className="mt-4">
-                <Label htmlFor="phoneNumber" className="text-gray-700 dark:text-gray-200">
-                  M-Pesa Phone Number
-                </Label>
-                <Input
-                  id="phoneNumber"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="M-Pesa phone number format 254700000000"
-                  className="mt-1 border-gray-300 focus:ring-indigo-500"
-                />
-              </div>
-            )}
-          </div>
+         <div className="py-8 px-6 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-md mx-auto border border-gray-200 dark:border-gray-700">
+         <div className="text-center">
+           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Payment Details</h2>
+           <p className="text-gray-600 dark:text-gray-300">M-Pesa Payment</p>
+         </div>
+         
+         <div className="text-gray-700 dark:text-gray-200">
+           <p className="text-lg">
+             <strong>Service:</strong> {booking.service.name}
+           </p>
+           <p className="text-lg">
+             <strong>Price:</strong>{" "}
+             {new Intl.NumberFormat("en-US", {
+               style: "currency",
+               currency: "KSH",
+             }).format(booking.service.price)}
+           </p>
+           <p className="text-lg">
+             <strong>Name:</strong> {booking.user.name}
+           </p>
+           <p className="text-lg">
+             <strong>Email:</strong> {booking.user.email}
+           </p>
+       
+           {paymentMethod === "mpesa" && (
+             <div className="mt-6">
+               <Label htmlFor="phoneNumber" className="block text-gray-700 dark:text-gray-200 text-sm font-medium">
+                 M-Pesa Phone Number
+               </Label>
+               <Input
+                 id="phoneNumber"
+                 value={phoneNumber}
+                 onChange={(e) => setPhoneNumber(e.target.value)}
+                 placeholder="Format: 254700000000"
+                 className="mt-2 w-full border border-gray-300 dark:border-gray-600 p-2 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+               />
+             </div>
+           )}
+         </div>
+       
+         <div className="flex justify-between items-center mt-6">
+           <Button onClick={() => setStep(1)} variant="outline" className="w-full sm:w-auto">
+             Back
+           </Button>
+           <Button onClick={handleConfirmPayment} className="w-full sm:w-auto">
+             Confirm Payment
+           </Button>
+         </div>
+       </div>
         )}
 
-        <DialogFooter className="flex justify-between flex-wrap gap-2 sm:flex-col sm:space-y-2 sm:mt-4">
+        {/* <DialogFooter className="flex justify-between flex-wrap gap-2 sm:flex-col sm:space-y-2 sm:mt-4">
           {step === 2 && (
             <Button onClick={() => setStep(1)} variant="outline" className="w-full sm:w-auto">
               Back
@@ -204,7 +216,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, booking })
               Confirm Payment
             </Button>
           )}
-        </DialogFooter>
+        </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );

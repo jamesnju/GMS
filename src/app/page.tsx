@@ -48,19 +48,19 @@ const services: Service[] = [
 
 const testimonials: Testimonial[] = [
   {
-    name: "John Doe",
+    name: "John Kiptum",
     comment: "Great service! They fixed my car quickly and at a reasonable price.",
     rating: 5,
     avatar: "https://i.pravatar.cc/150?img=1",
   },
   {
-    name: "Jane Smith",
+    name: "Rajab Amina",
     comment: "Very professional team. I always feel confident leaving my car with them.",
     rating: 5,
     avatar: "https://i.pravatar.cc/150?img=5",
   },
   {
-    name: "Mike Johnson",
+    name: "Mike Kimani",
     comment: "Excellent diagnostic work. They found and fixed an issue that other shops missed.",
     rating: 4,
     avatar: "https://i.pravatar.cc/150?img=8",
@@ -81,9 +81,9 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
+    <div className="flex flex-col min-h-screen border-r-0 bg-Background md:bg-Background sm:bg-Background text-gray-800">
       <motion.header
-        className="bg-blue-600 text-white p-4 shadow-md"
+        className="bg-[#65a30d] text-white p-4 shadow-md"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -126,7 +126,7 @@ export default function Home() {
               <motion.li key={item} whileTap={{ scale: 0.95 }}>
                 <Link
                   href={`#${item.toLowerCase()}`}
-                  className="block py-2 px-4 hover:bg-blue-700 rounded transition duration-300"
+                  className="block py-2 px-4 hover:bg-green-700 rounded transition duration-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item}
@@ -138,7 +138,7 @@ export default function Home() {
       </motion.header>
 
       <main className="flex-grow">
-        <section id="home" className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-32 overflow-hidden">
+        <section id="home" className="relative bg-gradient-to-r from-green-600 to-green-800 text-white py-32 overflow-hidden">
           <motion.div
             className="absolute inset-0 opacity-20"
             initial={{ scale: 1.2 }}
@@ -206,7 +206,7 @@ export default function Home() {
                           layout="fill"
                           objectFit="cover"
                         />
-                        <div className="absolute inset-0 bg-blue-600 bg-opacity-70 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-[#4d7c0f] bg-opacity-70 flex items-center justify-center">
                           <service.icon className="h-16 w-16 text-white" />
                         </div>
                       </div>
@@ -235,7 +235,7 @@ export default function Home() {
             >
               {testimonials.map((testimonial, index) => (
                 <motion.div key={index} variants={fadeInUp}>
-                  <Card className="h-full bg-white border-none shadow-lg hover:shadow-xl transition duration-300">
+                  <Card className="h-full bg-[#65a30d] border-none shadow-lg hover:shadow-xl transition duration-300">
                     <CardContent className="flex flex-col justify-between p-8">
                       <div>
                         <div className="flex items-center mb-4">
@@ -255,7 +255,7 @@ export default function Home() {
                             </div>
                           </div>
                         </div>
-                        <p className="italic text-gray-600">&quot;{testimonial.comment}&ldquo;</p>
+                        <p className="italic text-white">&quot;{testimonial.comment}&ldquo;</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -265,9 +265,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-24 bg-white" id="contact">
+        <section className="py-24 bg-[#4d7c0f]" id="contact">
           <div className="container mx-auto">
-            <motion.h2 className="text-4xl font-bold mb-12 text-center text-blue-600" {...fadeInUp}>
+            <motion.h2 className="text-4xl font-bold mb-12 text-center text-yellow-600" {...fadeInUp}>
               Visit Us
             </motion.h2>
             <motion.div
@@ -281,10 +281,10 @@ export default function Home() {
                   <CardContent className="p-8">
                     <h3 className="text-2xl font-semibold mb-6 text-blue-800">Contact Information</h3>
                     <p className="mb-4 text-gray-600">
-                      <strong>Address:</strong> Ambank House, Nairobi CBD
+                      <strong>Address:</strong> Likoni, Mombasa
                     </p>
                     <p className="mb-4 text-gray-600">
-                      <strong>Phone:</strong> (254) 123-4567
+                      <strong>Phone:</strong> (254) 723-4567
                     </p>
                     <p className="mb-4 text-blue-600">
                       <strong>Email:</strong> info@autoprogarage.com
@@ -337,7 +337,7 @@ export default function Home() {
       </main>
 
       <motion.footer
-        className="bg-blue-800 text-white py-12"
+        className="bg-[#65a30d] text-white py-12"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
